@@ -1,0 +1,41 @@
+---
+# ============================================================================
+# tools/sync_project.yml — trigger an AAP project sync and wait for it
+# ============================================================================
+# The project runs with scm_update_on_launch: false (deterministic runs), so
+# after pushing playbook/role changes you must sync the project before AAP will
+# use them. This is that manual sync, scriptable.
+#
+# Secrets come from the environment (source docs/dev-environment.sh first).
+#
+# Run:
+#   source docs/dev-environment.sh && ansible-playbook tools/sync_project.yml
+#   # override the project name if needed:
+#   ansible-playbook tools/sync_project.yml -e project_name="AMZL Daily Demo"
+# ============================================================================
+
+- name: Sync the AMZL Daily Demo project from git
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    project_name: "AMZL Daily Demo"
+    aap_hostname: "{{ lookup('ansible.builtin.env', 'AAP_HOSTNAME') }}"
+    aap_username: "{{ lookup('ansible.builtin.env', 'AAP_CONTROLLER_USERNAME') | default('admin', true) }}"
+    aap_password: "{{ lookup('ansible.builtin.env', 'AAP_CONTROLLER_PASSWORD') }}"
+    aap_validate_certs: "{{ lookup('ansible.builtin.env', 'AAP_VALIDATE_CERTS') | default('false', true) | bool }}"
+  tasks:
+    - name: Trigger project update and wait for completion
+      ansible.controller.project_update:
+        name: "{{ project_name }}"
+        controller_host: "{{ aap_hostname }}"
+        controller_username: "{{ aap_username }}"
+        controller_password: "{{ aap_password }}"
+        validate_certs: "{{ aap_validate_certs }}"
+        wait: true
+        timeout: 240
+      register: sync_result
+
+    - name: Show sync result
+      ansible.builtin.debug:
+        msg: "Project '{{ project_name }}' sync status: {{ sync_result.status | default('unknown') }}"

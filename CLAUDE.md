@@ -53,6 +53,6 @@ user → deploy Docker webserver**. Every AAP object is config-as-code
 `playbooks/roles/` reusable roles (kept **adjacent to the playbooks** so
 Ansible's `<playbook_dir>/roles` search finds them with no project-local
 `ansible.cfg`) · `execution-environment.yml` EE def · `docs/` env template +
-talk track.
+talk track · `tools/` local operator helpers (`sync_project.yml`, `get_job.yml`).
 
 See `ROADMAP.md` for phase status and the Decisions Log.

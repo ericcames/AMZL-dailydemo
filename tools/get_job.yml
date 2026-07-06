@@ -1,0 +1,72 @@
+---
+# ============================================================================
+# tools/get_job.yml — fetch a controller job's status + stdout for debugging
+# ============================================================================
+# Pulls a job's summary and full stdout via the controller API so you can read a
+# failed workflow node without clicking through the UI. Writes the stdout to
+# /tmp/amzl-job-<id>-stdout.txt and prints a summary.
+#
+# Secrets come from the environment (source docs/dev-environment.sh first).
+#
+# Run:
+#   source docs/dev-environment.sh && \
+#   ansible-playbook tools/get_job.yml -e job_id=18
+# ============================================================================
+
+- name: Fetch a controller job's status and stdout
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    aap_hostname: "{{ lookup('ansible.builtin.env', 'AAP_HOSTNAME') }}"
+    aap_username: "{{ lookup('ansible.builtin.env', 'AAP_CONTROLLER_USERNAME') | default('admin', true) }}"
+    aap_password: "{{ lookup('ansible.builtin.env', 'AAP_CONTROLLER_PASSWORD') }}"
+    aap_validate_certs: "{{ lookup('ansible.builtin.env', 'AAP_VALIDATE_CERTS') | default('false', true) | bool }}"
+    # Pass -e job_id=<n>
+    stdout_file: "/tmp/amzl-job-{{ job_id }}-stdout.txt"
+  tasks:
+    - name: Require a job_id
+      ansible.builtin.assert:
+        that: job_id is defined
+        fail_msg: "Pass the job id, e.g. -e job_id=18"
+
+    - name: Get job summary
+      ansible.builtin.uri:
+        url: "{{ aap_hostname }}/api/controller/v2/jobs/{{ job_id }}/"
+        method: GET
+        url_username: "{{ aap_username }}"
+        url_password: "{{ aap_password }}"
+        force_basic_auth: true
+        validate_certs: "{{ aap_validate_certs }}"
+      register: job
+
+    - name: Show summary
+      ansible.builtin.debug:
+        msg:
+          - "name: {{ job.json.name }}"
+          - "status: {{ job.json.status }}"
+          - "playbook: {{ job.json.playbook }}"
+          - "failed: {{ job.json.failed }}"
+          - "elapsed: {{ job.json.elapsed }}"
+          - "job_explanation: {{ job.json.job_explanation | default('') }}"
+
+    - name: Get job stdout (text)
+      ansible.builtin.uri:
+        url: "{{ aap_hostname }}/api/controller/v2/jobs/{{ job_id }}/stdout/?format=txt"
+        method: GET
+        url_username: "{{ aap_username }}"
+        url_password: "{{ aap_password }}"
+        force_basic_auth: true
+        validate_certs: "{{ aap_validate_certs }}"
+        return_content: true
+      register: out
+
+    - name: Write stdout to a temp file
+      ansible.builtin.copy:
+        content: "{{ out.content }}"
+        dest: "{{ stdout_file }}"
+        mode: "0644"
+
+    - name: Where to read it
+      ansible.builtin.debug:
+        msg: "Full stdout written to {{ stdout_file }}"

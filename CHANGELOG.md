@@ -36,6 +36,10 @@ to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- `tools/` operator helpers: `sync_project.yml` (manual AAP project sync, needed
+  now that `scm_update_on_launch` is off) and `get_job.yml` (fetch a job's status
+  + stdout via the API for debugging). Both read creds from the environment.
+
 - `playbooks/provision_vm_aws.yml`: idempotent guard task
   (`amazon.aws.s3_bucket`) that ensures the Terraform state bucket exists before
   `terraform init`, so node 1 is self-sufficient — no manual `aws s3 mb`
