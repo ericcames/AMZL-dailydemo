@@ -6,6 +6,14 @@ to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Workflow survey: "Target release" is now a `multiplechoice` dropdown
+  (`latest` + the most recent AL2023 point releases) instead of free text — a
+  mistyped `releasever` no longer sails through to 404 the AL2023 mirror and
+  fail the patch node. List is the newest releases because `dnf update` only
+  moves forward; refresh it from the AL2023 release notes as new builds ship.
+
 ### Added
 
 - `playbooks/provision_vm_aws.yml`: idempotent guard task

@@ -31,11 +31,21 @@ controller_workflows:
             - medium
             - large
         - question_name: Target release
-          question_description: "AL2023 version to patch to (e.g. 2023.5.20240701), or 'latest'"
+          # Static menu of recent AL2023 releases. `dnf update --releasever` only
+          # moves forward, so we list the newest point releases (older ones would
+          # no-op against a latest SSM AMI). Refresh from the AL2023 release notes
+          # as new builds ship: docs.aws.amazon.com/linux/al2023/release-notes/
+          question_description: "AL2023 release to patch to ('latest' for newest, or pin to a specific tested release)"
           variable: amzl_target_release
-          type: text
-          required: false
+          type: multiplechoice
+          required: true
           default: latest
+          choices:
+            - latest
+            - "2023.12.20260629"
+            - "2023.12.20260622"
+            - "2023.12.20260611"
+            - "2023.12.20260608"
     simplified_workflow_nodes:
       - identifier: provision
         unified_job_template: "{{ jt_provision }}"
