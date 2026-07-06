@@ -1,0 +1,30 @@
+---
+authors:
+  - Eric Ames (ericcames)
+dependencies:
+  "ansible.posix": ">=2.1.0"
+  "ansible.utils": ">=6.0.0"
+  "amazon.aws": ">=11.0.0"
+  "community.docker": ">=4.0.0"
+  "ansible.platform": ">=2.7.0"
+  "ansible.controller": ">=4.8.0"
+  "redhat.rhel_system_roles": ">=1.108.0"
+  "infra.aap_configuration": ">=4.2.0"
+license_file: LICENSE
+name: amzl_daily_demo
+description: An Amazon Linux 2023 daily demo — provision (Terraform), patch, harden, create a devops user, and deploy a Docker webserver via an AAP workflow (config-as-code).
+namespace: ericcames
+readme: README.md
+repository: https://github.com/ericcames/AMZL-dailydemo
+issues: https://github.com/ericcames/AMZL-dailydemo/issues
+tags:
+  - lab
+  - cloud
+  - aws
+  - amazonlinux
+  - al2023
+  - docker
+  - dailydemo
+  - automation
+  - ansible
+version: 1.0.0

@@ -1,0 +1,24 @@
+# Code owners for AMZL-dailydemo.
+# GitHub requests review from these owners when matching paths change.
+
+# Catch-all
+*                       @ericcames
+
+# Ansible content
+/playbooks/             @ericcames
+/roles/                 @ericcames
+/collections/           @ericcames
+
+# Infrastructure as Code
+/terraform/             @ericcames
+
+# AAP Config as Code
+/aap_config/            @ericcames
+
+# Execution Environment
+/execution-environment.yml  @ericcames
+
+# Governance + docs
+/docs/                  @ericcames
+/ROADMAP.md             @ericcames
+/CLAUDE.md              @ericcames
