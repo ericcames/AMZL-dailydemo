@@ -8,6 +8,11 @@ to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Terraform stack (`terraform/`) for an Amazon Linux 2023 EC2 instance: VPC +
+  public subnet + IGW + security group + SSH key pair, AL2023 AMI resolved from
+  the AWS SSM public parameter, t-shirt sizing (small/medium/large), and S3
+  remote-state backend. `terraform validate` passes.
+
 - Execution Environment definition (`execution-environment.yml`) — RHEL9 minimal
   base + Terraform 1.15.6 CLI; collections `amazon.aws`, `ansible.posix`,
   `community.docker`, `ansible.controller` (`collections/requirements.yml`).
