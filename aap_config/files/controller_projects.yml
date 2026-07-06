@@ -5,7 +5,8 @@ controller_projects:
     scm_type: git
     scm_url: "https://github.com/ericcames/AMZL-dailydemo.git"
     scm_branch: main
-    # During active development, pull the latest playbooks on every job launch.
-    scm_update_on_launch: true
+    # No update-on-launch: the project syncs explicitly (manual sync or a
+    # project_update step), so a workflow run doesn't trigger a git pull before
+    # every node — deterministic, and no per-node sync overhead.
     scm_clean: true
     default_environment: "{{ my_execution_environment }}"

@@ -50,7 +50,9 @@ user → deploy Docker webserver**. Every AAP object is config-as-code
 ## Layout
 
 `aap_config/` CaC · `terraform/` AWS infra · `playbooks/` the 5 plays ·
-`roles/` reusable roles · `execution-environment.yml` EE def · `docs/` env
-template + talk track.
+`playbooks/roles/` reusable roles (kept **adjacent to the playbooks** so
+Ansible's `<playbook_dir>/roles` search finds them with no project-local
+`ansible.cfg`) · `execution-environment.yml` EE def · `docs/` env template +
+talk track.
 
 See `ROADMAP.md` for phase status and the Decisions Log.

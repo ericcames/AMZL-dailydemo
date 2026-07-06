@@ -6,7 +6,20 @@ to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Role resolution: moved `roles/` → `playbooks/roles/` so the role-based
+  playbooks (hardening, devops user, docker web) find their roles via Ansible's
+  automatic `<playbook_dir>/roles` search. Previously they failed from AAP with
+  "the role '…' was not found" because repo-root `roles/` isn't on the search
+  path when the playbook lives in `playbooks/`, and this repo (by rule) ships no
+  project-local `ansible.cfg` to set `roles_path`.
+
 ### Changed
+
+- Project CaC: dropped `scm_update_on_launch` — the project no longer syncs from
+  git before every workflow node. Sync explicitly (manual or a project_update
+  step) for deterministic runs without per-node sync overhead.
 
 - Workflow survey: "Target release" is now a `multiplechoice` dropdown
   (`latest` + the most recent AL2023 point releases) instead of free text — a
