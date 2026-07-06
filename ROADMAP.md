@@ -10,11 +10,11 @@ create `devops` user → deploy a Docker webserver, all as config-as-code.
 | Phase | Scope | Status |
 |-------|-------|--------|
 | 0 | Repo scaffold + community standards | ✅ Complete |
-| 1 | Execution Environment (Terraform CLI + collections) — build & push to quay.io | 🔄 Definition done; build/push pending registry logins |
+| 1 | Execution Environment (Terraform CLI + collections) — build & push to quay.io | ✅ Complete — built, verified, pushed public: `quay.io/zigfreed/amzl-dailydemo-ee:v1.0.0` |
 | 2 | Terraform stack for AL2023 + `provision_vm_aws.yml` (node 1) | ✅ Complete |
 | 3 | Playbooks: patch, harden, create devops user, deploy Docker web (nodes 2–5) | ✅ Complete |
 | 4 | `aap_config/` CaC — 5 job templates + 5-node workflow + credentials/inventory/EE | ✅ Complete |
-| 5 | Load CaC + end-to-end dry run against the live AWS open env | ⬜ Not started |
+| 5 | Load CaC + end-to-end dry run against the live AWS open env | ⬜ **NEXT** — `source docs/dev-environment.sh` → `aws s3 mb` state bucket → `ansible-playbook aap_config/load.yml` → launch the workflow |
 
 ## Decisions Log
 
@@ -33,8 +33,13 @@ create `devops` user → deploy a Docker webserver, all as config-as-code.
   (anonymous-pullable, on-brand, no entitlement needed at demo time).
 - **2026-07-06** — Terraform state bucket: **amzl-dailydemo-tfstate-eca**.
 - **2026-07-06** — AL2023 is not RHEL: hardening uses **native** modules (chrony,
-  sshd, banners, security `dnf` updates), NOT `redhat.rhel_system_roles`. This
-  also keeps the EE free of the `dnf`-bindep/PYCMD build workaround.
+  sshd, banners, security `dnf` updates), NOT `redhat.rhel_system_roles`.
+- **2026-07-06** — EE build **requires `--build-arg PYCMD=/usr/bin/python3.11`**
+  (base `ee-minimal-rhel9` points `/usr/bin/python3` at Python 3.9, which has no
+  pip → assemble fails). This is a base-image property, independent of
+  `rhel_system_roles`. Build verified clean: the `~/.ansible.cfg` Hub token lands
+  only in the intermediate galaxy stage and is **NOT** in the final image, so the
+  public quay push carries no secret.
 
 ## Deferred / fast-follow
 
