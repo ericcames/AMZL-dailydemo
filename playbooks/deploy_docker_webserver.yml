@@ -12,5 +12,15 @@
   gather_facts: true
   become: true
 
+  pre_tasks:
+    - name: Read the full AL2023 release string
+      ansible.builtin.slurp:
+        src: /etc/system-release
+      register: _system_release
+
+    - name: Set the release version fact
+      ansible.builtin.set_fact:
+        amzl_release: "{{ (_system_release.content | b64decode).strip() }}"
+
   roles:
     - role: docker_webserver

@@ -61,3 +61,7 @@
       - "{{ docker_webserver_content_dir }}:/var/www/html:Z"
   vars:
     ansible_python_interpreter: /opt/docker-venv/bin/python
+
+- name: Show the webserver URL
+  ansible.builtin.debug:
+    msg: "Webserver live at http://{{ inventory_hostname }}"
