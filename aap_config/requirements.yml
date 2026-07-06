@@ -1,0 +1,14 @@
+---
+# Collections required to run the AMZL-dailydemo AAP Configuration-as-Code.
+# Install: ansible-galaxy collection install -r aap_config/requirements.yml
+#
+# These run LOCALLY (on your workstation) to load objects into AAP — they are
+# separate from collections/requirements.yml, which is what gets baked into the
+# runtime Execution Environment.
+collections:
+  - name: infra.aap_configuration
+    version: 4.4.0
+  - name: ansible.platform
+    version: 2.6.20251106
+  - name: ansible.controller
+    version: 4.8.0

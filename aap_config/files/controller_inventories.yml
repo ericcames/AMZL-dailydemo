@@ -1,0 +1,7 @@
+---
+controller_inventories:
+  # Amazon Linux 2023 hosts are registered here by provision_vm_aws.yml (node 1),
+  # under the "linux" group that nodes 2-5 target.
+  - name: "{{ inventory_name }}"
+    organization: "{{ my_organization }}"
+    variables: {}

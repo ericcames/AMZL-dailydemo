@@ -1,0 +1,58 @@
+---
+# ============================================================================
+# AMZL-dailydemo CaC variables
+# NO secrets in version control. Every sensitive value resolves at runtime from
+# an environment variable (see docs/dev-environment.sh.example).
+# ============================================================================
+
+# --- AAP API connection (basic auth — no token minted) -----------------------
+aap_hostname: "{{ lookup('ansible.builtin.env', 'AAP_HOSTNAME') }}"
+aap_validate_certs: "{{ lookup('ansible.builtin.env', 'AAP_VALIDATE_CERTS') | default('false', true) | bool }}"
+aap_username: "{{ lookup('ansible.builtin.env', 'AAP_CONTROLLER_USERNAME') | default('admin', true) }}"
+aap_password: "{{ lookup('ansible.builtin.env', 'AAP_CONTROLLER_PASSWORD') }}"
+
+# --- Org + Execution Environment ---------------------------------------------
+my_organization: "IT Service Automation"
+
+ee_name: "AMZL Daily Demo - EE"
+ee_version: "{{ lookup('ansible.builtin.env', 'AMZL_DAILYDEMO_EE_VERSION') | default('v1.0.0', true) }}"
+# Public quay.io image — Controller pulls it directly (pull: missing), so no
+# Private Automation Hub sync or registry credential is needed for this demo.
+ee_image: "{{ lookup('ansible.builtin.env', 'AMZL_DAILYDEMO_EE_IMAGE') | default('quay.io/zigfreed/amzl-dailydemo-ee:' ~ ee_version, true) }}"
+my_execution_environment: "{{ ee_name }}"
+
+# --- AAP credential (host registration from the provision play) --------------
+controller_cred_host: "{{ aap_hostname }}"
+controller_cred_username: "{{ aap_username }}"
+controller_cred_password: "{{ aap_password }}"
+
+# --- AWS ---------------------------------------------------------------------
+aws_access_key_id: "{{ lookup('ansible.builtin.env', 'AWS_ACCESS_KEY_ID') }}"
+aws_secret_access_key: "{{ lookup('ansible.builtin.env', 'AWS_SECRET_ACCESS_KEY') }}"
+aws_default_region: "{{ lookup('ansible.builtin.env', 'AWS_DEFAULT_REGION') | default('us-east-1', true) }}"
+aws_tf_state_bucket: "{{ lookup('ansible.builtin.env', 'AWS_TF_STATE_BUCKET') }}"
+
+# --- SSH / Linux machine -----------------------------------------------------
+linux_admin_username: "{{ lookup('ansible.builtin.env', 'LINUX_ADMIN_USERNAME') | default('ec2-user', true) }}"
+linux_ssh_public_key: "{{ lookup('ansible.builtin.env', 'LINUX_SSH_PUBLIC_KEY') }}"
+linux_ssh_private_key: "{{ lookup('ansible.builtin.env', 'LINUX_SSH_PRIVATE_KEY') }}"
+
+# --- devops user secret ------------------------------------------------------
+devops_password: "{{ lookup('ansible.builtin.env', 'DEVOPS_PASSWORD') }}"
+
+# --- Object names ------------------------------------------------------------
+project_name: "AMZL Daily Demo"
+inventory_name: "amzl-dailydemo"
+
+cred_aws: "AMZL Daily Demo - AWS"
+cred_linux: "AMZL Daily Demo - Machine"
+cred_controller: "AMZL Daily Demo - Controller"
+cred_secrets: "AMZL Daily Demo - Secrets"
+
+jt_provision: "AMZL Daily Demo - 1 Provision VM (AWS)"
+jt_patch: "AMZL Daily Demo - 2 Patch to Release"
+jt_harden: "AMZL Daily Demo - 3 Security Hardening"
+jt_devops_user: "AMZL Daily Demo - 4 Create devops User"
+jt_docker_web: "AMZL Daily Demo - 5 Deploy Docker Webserver"
+
+workflow_name: "AMZL Daily Demo - Provision and Configure"

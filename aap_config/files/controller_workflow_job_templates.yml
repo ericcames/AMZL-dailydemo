@@ -1,0 +1,61 @@
+---
+# NOTE: the infra.aap_configuration role uses `controller_workflows`.
+#
+# ── AMZL Daily Demo — Provision and Configure ─────────────────────────────────
+#
+#   Provision VM (AWS Terraform)
+#     └─►success─► Patch to target release
+#           └─►success─► Security hardening
+#                 └─►success─► Create devops user
+#                       └─►success─► Deploy Docker webserver
+#
+# A single workflow-level survey collects vm_size + amzl_target_release once and
+# propagates them to the relevant nodes. Any node failing stops the chain.
+controller_workflows:
+  - name: "{{ workflow_name }}"
+    organization: "{{ my_organization }}"
+    inventory: "{{ inventory_name }}"
+    survey_enabled: true
+    survey_spec:
+      name: ""
+      description: "Amazon Linux 2023 VM size and target patch release"
+      spec:
+        - question_name: VM size
+          question_description: "Amazon Linux 2023 t-shirt size on AWS"
+          variable: vm_size
+          type: multiplechoice
+          required: true
+          default: medium
+          choices:
+            - small
+            - medium
+            - large
+        - question_name: Target release
+          question_description: "AL2023 version to patch to (e.g. 2023.5.20240701), or 'latest'"
+          variable: amzl_target_release
+          type: text
+          required: false
+          default: latest
+    simplified_workflow_nodes:
+      - identifier: provision
+        unified_job_template: "{{ jt_provision }}"
+        success_nodes:
+          - patch
+
+      - identifier: patch
+        unified_job_template: "{{ jt_patch }}"
+        success_nodes:
+          - harden
+
+      - identifier: harden
+        unified_job_template: "{{ jt_harden }}"
+        success_nodes:
+          - devops_user
+
+      - identifier: devops_user
+        unified_job_template: "{{ jt_devops_user }}"
+        success_nodes:
+          - docker_web
+
+      - identifier: docker_web
+        unified_job_template: "{{ jt_docker_web }}"

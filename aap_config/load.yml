@@ -1,0 +1,39 @@
+---
+# ============================================================================
+# AMZL-dailydemo — AAP Configuration as Code entry point
+# ============================================================================
+# Creates every AAP object from the files/ directory using the
+# infra.aap_configuration.dispatch role. Re-running is idempotent.
+#
+# Authents with aap_username / aap_password basic auth (group_vars/all.yml) —
+# no token is minted, so there is nothing to clean up.
+#
+# Prerequisites:
+#   - Collections installed: ansible-galaxy collection install -r aap_config/requirements.yml
+#   - Credentials exported:   source docs/dev-environment.sh
+#   - AAP instance reachable  (AAP_HOSTNAME)
+#
+# Run:
+#   source docs/dev-environment.sh && \
+#   ansible-playbook aap_config/load.yml 2>&1 | tee /tmp/load-$(date +%Y%m%d-%H%M%S).log
+# ============================================================================
+
+- name: Apply AMZL-dailydemo AAP configuration
+  hosts: localhost
+  gather_facts: false
+  connection: local
+  vars_files:
+    - files/gateway_organizations.yml
+    - files/controller_credential_types.yml
+    - files/controller_credentials.yml
+    - files/controller_projects.yml
+    - files/controller_inventories.yml
+    - files/controller_execution_environments.yml
+    - files/controller_job_templates.yml
+    - files/controller_workflow_job_templates.yml
+  tasks:
+    - name: Apply all AAP objects via dispatch
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.dispatch
+      vars:
+        aap_configuration_secure_logging: false

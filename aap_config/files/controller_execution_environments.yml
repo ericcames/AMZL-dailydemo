@@ -1,0 +1,21 @@
+---
+# Registers the AMZL Daily Demo EE in Controller so the job templates can
+# reference it by name. The image is a PUBLIC quay.io repo, so Controller pulls
+# it directly — no Private Automation Hub sync and no registry credential.
+#
+# "pull: missing" pulls the image once, then reuses the cached layer. Ship an
+# update by building a new immutable tag, pushing it, bumping AMZL_DAILYDEMO_EE_VERSION,
+# and re-applying load.yml (the new tag isn't present locally, so it pulls once).
+#
+# EE DESCRIPTION CONVENTION: enumerate the version-pinned contents so the
+# description IS a manifest. Keep in sync with execution-environment.yml and
+# collections/requirements.yml on every EE bump.
+controller_execution_environments:
+  - name: "{{ ee_name }}"
+    image: "{{ ee_image }}"
+    pull: missing
+    organization: "{{ my_organization }}"
+    description: >-
+      AMZL Daily Demo EE {{ ee_version }} (base ee-minimal-rhel9:2.17.14) —
+      Terraform 1.15.6 · amazon.aws · ansible.posix · community.docker ·
+      ansible.controller

@@ -8,6 +8,12 @@ to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Config-as-code (`aap_config/`): `load.yml` (basic-auth dispatch, no token),
+  `requirements.yml`, `group_vars/all.yml`, and object files — organization,
+  a `Secrets` custom credential type + 4 credentials, project, inventory, the
+  public quay EE, 5 job templates, and the 5-node `Provision and Configure`
+  workflow with a single survey. yamllint + ansible-lint pass.
+
 - Workflow playbooks (`playbooks/`): `provision_vm_aws.yml` (Terraform wrapper +
   AAP host registration), `patch_amzl.yml` (dnf `--releasever` pin), plus
   `security_hardening.yml`, `create_devops_user.yml`, `deploy_docker_webserver.yml`.

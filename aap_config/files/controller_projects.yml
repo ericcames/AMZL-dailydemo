@@ -1,0 +1,11 @@
+---
+controller_projects:
+  - name: "{{ project_name }}"
+    organization: "{{ my_organization }}"
+    scm_type: git
+    scm_url: "https://github.com/ericcames/AMZL-dailydemo.git"
+    scm_branch: main
+    # During active development, pull the latest playbooks on every job launch.
+    scm_update_on_launch: true
+    scm_clean: true
+    default_environment: "{{ my_execution_environment }}"

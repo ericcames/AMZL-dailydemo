@@ -1,0 +1,93 @@
+---
+# NOTE: the infra.aap_configuration role uses `controller_templates` (not
+# `controller_job_templates`) — a known collection quirk.
+#
+# Five job templates, one per workflow node. All use the AMZL Daily Demo project,
+# the amzl-dailydemo inventory, and the AMZL Daily Demo EE. Nodes 2-5 target the
+# "linux" group (the play default) via the Machine credential; the provision node
+# runs on localhost and registers the host.
+controller_templates:
+
+  # ── Node 1: Provision VM (AWS Terraform) ────────────────────────────────────
+  - name: "{{ jt_provision }}"
+    job_type: run
+    organization: "{{ my_organization }}"
+    inventory: "{{ inventory_name }}"
+    project: "{{ project_name }}"
+    playbook: playbooks/provision_vm_aws.yml
+    execution_environment: "{{ my_execution_environment }}"
+    credentials:
+      - "{{ cred_aws }}"          # AWS_ACCESS_KEY_ID / SECRET for terraform
+      - "{{ cred_controller }}"   # CONTROLLER_* for host registration
+      - "{{ cred_secrets }}"      # AWS_TF_STATE_BUCKET / AWS_DEFAULT_REGION / LINUX_SSH_PUBLIC_KEY
+    survey_enabled: true
+    survey_spec:
+      name: ""
+      description: "Pick a VM size"
+      spec:
+        - question_name: VM size
+          question_description: "Amazon Linux 2023 t-shirt size on AWS"
+          variable: vm_size
+          type: multiplechoice
+          required: true
+          default: medium
+          choices:
+            - small
+            - medium
+            - large
+
+  # ── Node 2: Patch to a target release ───────────────────────────────────────
+  - name: "{{ jt_patch }}"
+    job_type: run
+    organization: "{{ my_organization }}"
+    inventory: "{{ inventory_name }}"
+    project: "{{ project_name }}"
+    playbook: playbooks/patch_amzl.yml
+    execution_environment: "{{ my_execution_environment }}"
+    credentials:
+      - "{{ cred_linux }}"
+    survey_enabled: true
+    survey_spec:
+      name: ""
+      description: "Target AL2023 release"
+      spec:
+        - question_name: Target release
+          question_description: "AL2023 version to patch to (e.g. 2023.5.20240701), or 'latest'"
+          variable: amzl_target_release
+          type: text
+          required: false
+          default: latest
+
+  # ── Node 3: Security hardening ──────────────────────────────────────────────
+  - name: "{{ jt_harden }}"
+    job_type: run
+    organization: "{{ my_organization }}"
+    inventory: "{{ inventory_name }}"
+    project: "{{ project_name }}"
+    playbook: playbooks/security_hardening.yml
+    execution_environment: "{{ my_execution_environment }}"
+    credentials:
+      - "{{ cred_linux }}"
+
+  # ── Node 4: Create the devops user ──────────────────────────────────────────
+  - name: "{{ jt_devops_user }}"
+    job_type: run
+    organization: "{{ my_organization }}"
+    inventory: "{{ inventory_name }}"
+    project: "{{ project_name }}"
+    playbook: playbooks/create_devops_user.yml
+    execution_environment: "{{ my_execution_environment }}"
+    credentials:
+      - "{{ cred_linux }}"        # SSH as ec2-user
+      - "{{ cred_secrets }}"      # DEVOPS_PASSWORD / LINUX_SSH_PUBLIC_KEY
+
+  # ── Node 5: Deploy the Docker webserver ─────────────────────────────────────
+  - name: "{{ jt_docker_web }}"
+    job_type: run
+    organization: "{{ my_organization }}"
+    inventory: "{{ inventory_name }}"
+    project: "{{ project_name }}"
+    playbook: playbooks/deploy_docker_webserver.yml
+    execution_environment: "{{ my_execution_environment }}"
+    credentials:
+      - "{{ cred_linux }}"
