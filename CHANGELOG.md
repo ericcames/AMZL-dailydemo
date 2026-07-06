@@ -8,6 +8,12 @@ to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- `devops_user` role: hash the devops password on the target host with `openssl
+  passwd -6` instead of the `password_hash('sha512')` Jinja filter. The filter
+  runs controller-side in the EE, whose Python has neither `crypt` nor
+  `passlib`, so it failed with "Unable to encrypt nor hash, passlib must be
+  installed". Hashing on the target sidesteps the EE entirely — no rebuild.
+
 - Role resolution: moved `roles/` → `playbooks/roles/` so the role-based
   playbooks (hardening, devops user, docker web) find their roles via Ansible's
   automatic `<playbook_dir>/roles` search. Previously they failed from AAP with

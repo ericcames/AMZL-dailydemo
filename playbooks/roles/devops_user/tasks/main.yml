@@ -14,10 +14,24 @@
     state: present
   loop: "{{ devops_user_groups }}"
 
+# The password_hash filter runs controller-side, in the EE, whose Python has
+# neither crypt (removed in recent Python) nor passlib — so hash on the target
+# instead. openssl reads the plaintext from stdin (not argv) and the task is
+# no_log; -6 selects SHA-512. Idempotent enough: the salt (and thus the hash)
+# changes each run, but `update_password: on_create` only applies it when the
+# user is first created, so existing users don't churn.
+- name: Hash the devops password on the target
+  ansible.builtin.command:
+    cmd: openssl passwd -6 -stdin
+    stdin: "{{ devops_user_password }}"
+  register: devops_user_password_hash
+  changed_when: false
+  no_log: true
+
 - name: Create the devops user
   ansible.builtin.user:
     name: "{{ devops_user_username }}"
-    password: "{{ devops_user_password | password_hash('sha512') }}"
+    password: "{{ devops_user_password_hash.stdout }}"
     update_password: on_create
     groups: "{{ devops_user_groups }}"
     append: true

@@ -3,7 +3,8 @@ devops_user_username: devops
 
 # The team default password (plaintext) and the authorized SSH public key are
 # injected into the job environment by the "AMZL Daily Demo - Secrets"
-# credential. The password is hashed on the target host — never stored in git.
+# credential. The plaintext is hashed on the target host (openssl) at run time —
+# never stored in git.
 devops_user_password: "{{ lookup('ansible.builtin.env', 'DEVOPS_PASSWORD') }}"
 devops_user_ssh_public_key: "{{ lookup('ansible.builtin.env', 'LINUX_SSH_PUBLIC_KEY') }}"
 
