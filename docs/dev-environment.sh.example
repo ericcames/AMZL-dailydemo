@@ -45,6 +45,17 @@ export LINUX_SSH_PUBLIC_KEY="$(cat ~/.ssh/id_rsa.pub)"
 export DEVOPS_PASSWORD=""
 
 # ============================================================================
+# Automation Analytics (Red Hat Insights for Ansible) — service account
+# Analytics gathering is enabled by the CaC; upload to console.redhat.com
+# activates only when these are set. Create a service account at
+# console.redhat.com/iam/service-accounts. Leave unset to skip uploads.
+# (The AAP pre-login banner needs no env var — it ships committed in
+#  aap_config/files/gateway_settings.yml as generic, non-customer text.)
+# ============================================================================
+export REDHAT_SUBSCRIPTIONS_CLIENT_ID=""
+export REDHAT_SUBSCRIPTIONS_CLIENT_SECRET=""
+
+# ============================================================================
 # Execution Environment (optional overrides)
 # Defaults to the public quay.io image at the pinned version. Override only for
 # a one-off (e.g. testing a new build before bumping the CaC default).

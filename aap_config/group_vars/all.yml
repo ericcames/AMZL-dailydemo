@@ -40,6 +40,14 @@ linux_ssh_private_key: "{{ lookup('ansible.builtin.env', 'LINUX_SSH_PRIVATE_KEY'
 # --- devops user secret ------------------------------------------------------
 devops_password: "{{ lookup('ansible.builtin.env', 'DEVOPS_PASSWORD') }}"
 
+# --- Automation Analytics service account (secrets) --------------------------
+# console.redhat.com SERVICE ACCOUNT client ID/secret used to authenticate the
+# analytics upload (the Automation Calculator data feed). Empty by default:
+# tracking still flips on, but uploads won't authenticate until these are set.
+# From console.redhat.com/iam/service-accounts.
+redhat_subscriptions_client_id: "{{ lookup('ansible.builtin.env', 'REDHAT_SUBSCRIPTIONS_CLIENT_ID') | default('', true) }}"
+redhat_subscriptions_client_secret: "{{ lookup('ansible.builtin.env', 'REDHAT_SUBSCRIPTIONS_CLIENT_SECRET') | default('', true) }}"
+
 # --- Object names ------------------------------------------------------------
 project_name: "AMZL Daily Demo"
 inventory_name: "amzl-dailydemo"

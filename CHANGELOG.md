@@ -8,6 +8,20 @@ to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Config-as-code: baseline AAP settings applied by the dispatch run, following
+  the dc1.azure pattern.
+  - `aap_config/files/gateway_settings.yml` — AAP **pre-login message**
+    (`custom_login_info`); it's a gateway setting on AAP 2.6. Scope limited to
+    the login banner so loading the demo doesn't alter auth/proxy/password
+    policy on a shared AAP. Banner text is generic and committed.
+  - `aap_config/files/controller_settings.yml` — enables **Automation
+    Analytics** (`INSIGHTS_TRACKING_STATE`) with **service-account** auth
+    (`SUBSCRIPTIONS_CLIENT_ID`/`SUBSCRIPTIONS_CLIENT_SECRET`); legacy
+    `REDHAT_USERNAME`/`REDHAT_PASSWORD` explicitly cleared. Creds resolve from
+    env vars (`REDHAT_SUBSCRIPTIONS_CLIENT_ID`/`_SECRET`) and the role runs with
+    secure logging on so the client secret never lands in job output.
+  - `docs/dev-environment.sh.example` updated with the service-account vars.
+
 - Docs: `docs/dev-environment.sh.example` (env template — AAP, AWS, S3 bucket,
   SSH keys, DEVOPS_PASSWORD, EE overrides) and `docs/demo-talk-track.md`.
 

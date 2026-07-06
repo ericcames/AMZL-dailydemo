@@ -23,12 +23,14 @@
   gather_facts: false
   connection: local
   vars_files:
+    - files/gateway_settings.yml
     - files/gateway_organizations.yml
     - files/controller_credential_types.yml
     - files/controller_credentials.yml
     - files/controller_projects.yml
     - files/controller_inventories.yml
     - files/controller_execution_environments.yml
+    - files/controller_settings.yml
     - files/controller_job_templates.yml
     - files/controller_workflow_job_templates.yml
   tasks:

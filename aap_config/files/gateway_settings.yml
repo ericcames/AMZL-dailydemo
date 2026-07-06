@@ -1,0 +1,20 @@
+---
+# ============================================================================
+# AMZL-dailydemo — Gateway settings as code
+# ============================================================================
+# Consumed by the infra.aap_configuration.gateway_settings role (part of the
+# dispatch run in load.yml). On AAP 2.6 the platform gateway serves the login
+# page, so the pre-login banner is a gateway setting (custom_login_info), not a
+# controller one.
+#
+# These are PLATFORM-WIDE settings, not "AMZL Daily Demo -" namespaced objects.
+# Scope is intentionally limited to the login banner so loading this demo does
+# not alter auth/proxy/password policy on a shared AAP. Banner text is generic
+# (no customer data) and safe to commit. Sourced from dc1.azure.
+gateway_settings:
+  custom_login_info: >-
+    THIS SYSTEM IS PROVIDED FOR USE BY AUTHORIZED USERS ONLY.
+    ALERT! You are entering into a secured area! Your IP, Login Time, Username
+    has been noted and has been sent to the server administrator! All activities
+    on this system are logged. Unauthorized access will be fully investigated
+    and reported to the appropriate law enforcement agencies.
