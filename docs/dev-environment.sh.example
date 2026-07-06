@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# ============================================================================
+# docs/dev-environment.sh.example
+# ============================================================================
+# Template for local credentials. Copy to docs/dev-environment.sh (gitignored),
+# fill in values, then `source docs/dev-environment.sh`.
+#
+# NEVER commit docs/dev-environment.sh — it holds real credentials.
+# ============================================================================
+
+# ============================================================================
+# AAP — from the Ansible Product Demos environment (RHDP catalog item)
+# ============================================================================
+export AAP_HOSTNAME=""                 # e.g. https://controller.<id>.<cluster>.rhdp.net — NO trailing slash
+export AAP_CONTROLLER_USERNAME="admin"
+export AAP_CONTROLLER_PASSWORD=""
+export AAP_VALIDATE_CERTS="false"
+
+# ============================================================================
+# AWS — credentials for Terraform EC2 provisioning
+# ============================================================================
+export AWS_ACCESS_KEY_ID=""
+export AWS_SECRET_ACCESS_KEY=""
+export AWS_DEFAULT_REGION="us-east-1"
+
+# S3 bucket for Terraform remote state — create once before load.yml:
+#   aws s3 mb "s3://$AWS_TF_STATE_BUCKET" --region "$AWS_DEFAULT_REGION"
+# Name must be globally unique.
+export AWS_TF_STATE_BUCKET="amzl-dailydemo-tfstate-eca"
+
+# ============================================================================
+# SSH — Linux machine credential for AAP + local SSH access to the EC2 instance
+# and to the provisioned devops user. Use the same key pair so you can SSH
+# directly during demos.
+# ============================================================================
+export LINUX_ADMIN_USERNAME="ec2-user"                     # AL2023 default admin
+export LINUX_SSH_PRIVATE_KEY="$(cat ~/.ssh/id_rsa)"
+export LINUX_SSH_PUBLIC_KEY="$(cat ~/.ssh/id_rsa.pub)"
+
+# ============================================================================
+# devops user — the team default password set on the provisioned host.
+# Injected into jobs by the "AMZL Daily Demo - Secrets" credential; hashed on
+# the host, never stored in git.
+# ============================================================================
+export DEVOPS_PASSWORD=""
+
+# ============================================================================
+# Execution Environment (optional overrides)
+# Defaults to the public quay.io image at the pinned version. Override only for
+# a one-off (e.g. testing a new build before bumping the CaC default).
+# ============================================================================
+# export AMZL_DAILYDEMO_EE_VERSION="v1.0.0"
+# export AMZL_DAILYDEMO_EE_IMAGE="quay.io/zigfreed/amzl-dailydemo-ee:latest"

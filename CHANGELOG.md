@@ -8,6 +8,9 @@ to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Docs: `docs/dev-environment.sh.example` (env template — AAP, AWS, S3 bucket,
+  SSH keys, DEVOPS_PASSWORD, EE overrides) and `docs/demo-talk-track.md`.
+
 - Config-as-code (`aap_config/`): `load.yml` (basic-auth dispatch, no token),
   `requirements.yml`, `group_vars/all.yml`, and object files — organization,
   a `Secrets` custom credential type + 4 credentials, project, inventory, the
