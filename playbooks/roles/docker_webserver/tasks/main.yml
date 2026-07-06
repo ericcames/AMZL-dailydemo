@@ -12,10 +12,12 @@
     state: started
     enabled: true
 
-- name: Install the Docker SDK for Python (required by community.docker)
+- name: Create a virtualenv for Docker SDK
   ansible.builtin.pip:
     name: docker
     state: present
+    virtualenv: /opt/docker-venv
+    virtualenv_command: python3 -m venv
 
 - name: Ensure the devops user is in the docker group
   ansible.builtin.user:
@@ -43,6 +45,8 @@
   community.docker.docker_image:
     name: "{{ docker_webserver_image }}"
     source: pull
+  vars:
+    ansible_python_interpreter: /opt/docker-venv/bin/python
 
 - name: Run the webserver container
   community.docker.docker_container:
@@ -55,3 +59,5 @@
       - "{{ docker_webserver_host_port }}:{{ docker_webserver_container_port }}"
     volumes:
       - "{{ docker_webserver_content_dir }}:/var/www/html:Z"
+  vars:
+    ansible_python_interpreter: /opt/docker-venv/bin/python
