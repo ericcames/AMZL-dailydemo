@@ -9,8 +9,8 @@ create `devops` user → deploy a Docker webserver, all as config-as-code.
 
 | Phase | Scope | Status |
 |-------|-------|--------|
-| 0 | Repo scaffold + community standards | 🔄 In progress |
-| 1 | Execution Environment (Terraform CLI + collections) — build & push to quay.io | ⬜ Not started |
+| 0 | Repo scaffold + community standards | ✅ Complete |
+| 1 | Execution Environment (Terraform CLI + collections) — build & push to quay.io | 🔄 Definition done; build/push pending registry logins |
 | 2 | Terraform stack for AL2023 + `provision_vm_aws.yml` (node 1) | ⬜ Not started |
 | 3 | Playbooks: patch, harden, create devops user, deploy Docker web (nodes 2–5) | ⬜ Not started |
 | 4 | `aap_config/` CaC — 5 job templates + 5-node workflow + credentials/inventory/EE | ⬜ Not started |
@@ -32,8 +32,9 @@ create `devops` user → deploy a Docker webserver, all as config-as-code.
 - **2026-07-06** — Docker webserver image: **registry.access.redhat.com/ubi9/httpd-24**
   (anonymous-pullable, on-brand, no entitlement needed at demo time).
 - **2026-07-06** — Terraform state bucket: **amzl-dailydemo-tfstate-eca**.
-- **2026-07-06** — AL2023 is not RHEL: only the `redhat.rhel_system_roles` that
-  apply on AL2023 (timesync, sshd) are used; the rest is done natively.
+- **2026-07-06** — AL2023 is not RHEL: hardening uses **native** modules (chrony,
+  sshd, banners, security `dnf` updates), NOT `redhat.rhel_system_roles`. This
+  also keeps the EE free of the `dnf`-bindep/PYCMD build workaround.
 
 ## Deferred / fast-follow
 

@@ -8,7 +8,6 @@ dependencies:
   "community.docker": ">=4.0.0"
   "ansible.platform": ">=2.7.0"
   "ansible.controller": ">=4.8.0"
-  "redhat.rhel_system_roles": ">=1.108.0"
   "infra.aap_configuration": ">=4.2.0"
 license_file: LICENSE
 name: amzl_daily_demo

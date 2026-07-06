@@ -1,0 +1,27 @@
+---
+# Collections baked into the AMZL-dailydemo Execution Environment (and used at
+# runtime by the workflow playbooks). Red Hat CERTIFIED (Automation Hub) versions
+# preferred where they exist; community.docker comes from community/validated.
+#
+# Amazon Linux 2023 is NOT RHEL, so we deliberately do NOT bake
+# redhat.rhel_system_roles here — the hardening play runs native modules
+# (chrony, sshd, banners) that work on AL2023 without a supported-platform
+# assumption.
+collections:
+  # AWS — instance facts / EC2 helpers for the provision play.
+  - name: amazon.aws
+    version: "11.3.0"
+
+  # POSIX — authorized_key, firewalld, sysctl in the hardening + user plays.
+  - name: ansible.posix
+    version: "2.1.0"
+
+  # Docker — pull + run the ubi9/httpd container in the webserver play.
+  - name: community.docker
+    version: ">=3.10.0"
+
+  # Register the Terraform-provisioned host/group in the AAP inventory so the
+  # downstream workflow nodes can target it. ansible.platform has no host/group
+  # module, so the provision play uses ansible.controller.host / .group.
+  - name: ansible.controller
+    version: "4.8.0"

@@ -1,0 +1,78 @@
+---
+# AMZL-dailydemo Execution Environment
+# ============================================================
+# Adds the Terraform CLI to the Red Hat minimal RHEL9 EE base so the Provision
+# node can call `terraform` directly, plus the certified/community collections
+# the runtime playbooks need (amazon.aws, ansible.posix, community.docker,
+# ansible.controller). Adapted from the aap.lightspeed.patching EE.
+#
+# BUILD (local):
+#   ansible-builder build -f execution-environment.yml \
+#                         -t amzl-dailydemo-ee:latest --prune-images
+#
+#   NOTE: unlike the lightspeed EE, this image does NOT bake
+#   redhat.rhel_system_roles, so there is no `dnf` bindep dragging in Python 3.9
+#   — the PYCMD=/usr/bin/python3.11 build-arg workaround is not needed here.
+#
+# PREREQUISITES:
+#   - ansible-builder installed:  pip install ansible-builder
+#   - Logged in to Red Hat registry: podman login registry.redhat.io
+#   - ~/.ansible.cfg with Automation Hub offline token (see ansible.cfg.example).
+#     Must be a REAL file, not a symlink — ansible-builder's COPY/ADD does not
+#     follow symlinks.
+#
+# PUSH (public quay.io — Controller pulls directly, no Private Automation Hub
+# sync needed for this demo):
+#   podman tag amzl-dailydemo-ee:latest quay.io/zigfreed/amzl-dailydemo-ee:vX.Y.Z
+#   podman tag amzl-dailydemo-ee:latest quay.io/zigfreed/amzl-dailydemo-ee:latest
+#   podman push quay.io/zigfreed/amzl-dailydemo-ee:vX.Y.Z
+#   podman push quay.io/zigfreed/amzl-dailydemo-ee:latest
+#   Bump rule: CVE-only rebuild -> patch · +collection -> minor · new base -> major.
+#   Then bump `ee_version` in aap_config/group_vars/all.yml and re-apply load.yml.
+#
+# TERRAFORM VERSION: pinned to 1.15.6 (latest as of 2026-06). Verify newer
+#   releases at https://releases.hashicorp.com/terraform/ and bump below.
+#
+# BUILD PROVENANCE:
+#   2026-07-06 (v1.0.0) — base ee-minimal-rhel9:2.17.14 + Terraform 1.15.6 on
+#     PATH so the Provision node can shell out to `terraform`; collections
+#     amazon.aws / ansible.posix / community.docker / ansible.controller.
+# ============================================================
+
+version: 3
+
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:2.17.14
+
+dependencies:
+  galaxy: collections/requirements.yml
+
+options:
+  package_manager_path: /usr/bin/microdnf
+
+# Injects your local ~/.ansible.cfg so ansible-galaxy can authenticate to
+# Automation Hub and pull Red Hat certified content during the build. Evaluated
+# at build time only; never committed. See ansible.cfg.example for the format.
+additional_build_files:
+  - src: /home/eames/.ansible.cfg
+    dest: configs
+
+additional_build_steps:
+  prepend_base:
+    # Apply available OS errata to the base layer first (security hygiene — the
+    # base image is a point-in-time build; errata published since are not in it).
+    - RUN microdnf upgrade -y --nodocs --setopt=install_weak_deps=0 && microdnf clean all
+    - RUN mkdir -p /etc/ansible/
+    # unzip is needed to extract the Terraform archive.
+    - RUN microdnf install -y unzip --nodocs --setopt=install_weak_deps=0
+    # Download + install Terraform. SINGLE-LINE RUN on purpose: ansible-builder
+    # flattens multiline YAML to one line, turning `\` continuations into
+    # backslash-space which bash mis-parses. To upgrade, bump the version below.
+    - RUN curl -fsSL https://releases.hashicorp.com/terraform/1.15.6/terraform_1.15.6_linux_amd64.zip -o terraform.zip && unzip terraform.zip && mv terraform /usr/local/bin/ && rm terraform.zip
+    - RUN terraform --version
+
+  prepend_galaxy:
+    # Make the Automation Hub cfg available to ansible-galaxy during install. The
+    # leading dot is preserved — the file lands at _build/configs/.ansible.cfg.
+    - ADD _build/configs/.ansible.cfg /etc/ansible/ansible.cfg

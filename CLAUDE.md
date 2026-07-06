@@ -20,9 +20,8 @@ user → deploy Docker webserver**. Every AAP object is config-as-code
   template is `docs/dev-environment.sh.example`; the real file
   `docs/dev-environment.sh` is gitignored.
 - **The demo runs from AAP**, on a **custom EE** that carries the **Terraform
-  CLI** plus `amazon.aws`, `community.docker`, `redhat.rhel_system_roles`,
-  `ansible.controller`, `ansible.platform`. Local `ansible-playbook` is for
-  debugging only.
+  CLI** plus `amazon.aws`, `ansible.posix`, `community.docker`, and
+  `ansible.controller`. Local `ansible-playbook` is for debugging only.
 - **EE image:** `quay.io/zigfreed/amzl-dailydemo-ee` (public). Build with
   `ansible-builder` + `PYCMD=/usr/bin/python3.11` (a `dnf` bindep otherwise
   repoints python3 → 3.9 and breaks assemble). `~/.ansible.cfg` must be a real
@@ -43,8 +42,10 @@ user → deploy Docker webserver**. Every AAP object is config-as-code
 - "Patch to a certain release" = AL2023 versioned repos:
   `dnf update --releasever=<2023.x.y>`.
 - Default admin user is `ec2-user`.
-- Only use `redhat.rhel_system_roles` that work on AL2023 (timesync, sshd).
-  Firewall/others: do natively; don't let a non-applicable role fail live.
+- Hardening uses **native** modules (chrony, sshd config, login banners,
+  security-only `dnf` updates) — NOT `redhat.rhel_system_roles`, which assume a
+  supported RHEL-family platform. Don't reintroduce them; don't let a
+  non-applicable role fail live.
 
 ## Layout
 

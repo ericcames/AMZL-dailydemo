@@ -13,7 +13,7 @@ job template so the story is visible step by step:
 ```
 1. Provision AMZL2023 VM (Terraform)     ← EC2 on AWS, registered into AAP inventory
      └─►success─► 2. Patch to a target release   ← dnf --releasever pin
-          └─►success─► 3. Security hardening       ← chrony, sshd, utils, best practices
+          └─►success─► 3. Security hardening       ← chrony, sshd, banners, security updates
                └─►success─► 4. Create devops user  ← wheel + docker, NOPASSWD sudo, SSH key
                     └─►success─► 5. Deploy Docker webserver  ← ubi9/httpd-24, standard index.html
 ```
@@ -40,9 +40,10 @@ Any node failing stops the chain.
 | State | Terraform remote state in S3 |
 
 > **Note — Amazon Linux 2023 is not RHEL.** No RHSM/Insights registration; the
-> box uses `dnf`. The certified `redhat.rhel_system_roles` that apply on AL2023
-> (timesync/chrony, sshd) are used; hardening steps that don't apply cleanly are
-> done natively.
+> box uses `dnf`. Hardening is done with **native** modules (chrony, sshd config,
+> login banners, security updates) rather than `redhat.rhel_system_roles`, which
+> assume a supported RHEL-family platform — this keeps the demo from failing live
+> on AL2023.
 
 ## Prerequisites
 
@@ -78,7 +79,7 @@ ansible-playbook aap_config/load.yml
 aap_config/        Config-as-code — projects, inventory, credentials, JTs, workflow, EE
 terraform/         AWS VPC + AL2023 EC2 stack (S3 remote state, t-shirt sizing)
 playbooks/         The 5 workflow playbooks + supporting plays
-roles/             Reusable roles (vpc, vm, inventory, hardening, devops user, docker web)
+roles/             Reusable roles (security_hardening, devops_user, docker_webserver)
 execution-environment.yml   ansible-builder definition (Terraform CLI + collections)
 collections/       Collections baked into the EE / used at runtime
 docs/              dev-environment.sh.example, talk track
