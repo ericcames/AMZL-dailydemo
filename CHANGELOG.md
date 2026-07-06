@@ -17,9 +17,10 @@ to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- Project CaC: dropped `scm_update_on_launch` — the project no longer syncs from
-  git before every workflow node. Sync explicitly (manual or a project_update
-  step) for deterministic runs without per-node sync overhead.
+- Project CaC: set `scm_update_on_launch: false` (explicitly, since the CaC role
+  only changes fields it's given) — the project no longer syncs from git before
+  every workflow node. Sync explicitly (manual or a project_update step) for
+  deterministic runs without per-node sync overhead.
 
 - Workflow survey: "Target release" is now a `multiplechoice` dropdown
   (`latest` + the most recent AL2023 point releases) instead of free text — a
