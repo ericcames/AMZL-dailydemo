@@ -49,6 +49,24 @@
               Need vm_size_tier (small|medium|large), AWS_TF_STATE_BUCKET, and
               LINUX_SSH_PUBLIC_KEY.
 
+        - name: Ensure the Terraform state bucket exists (idempotent guard)
+          # The S3 backend bucket must exist before `terraform init`. Managing it
+          # here in Ansible (not in the Terraform stack that uses it) avoids the
+          # backend chicken-and-egg. Idempotent: no-ops when the bucket is
+          # already present. NOTE: teardown must NOT delete this bucket — it is
+          # long-lived shared infra holding state for every run. Region is passed
+          # explicitly because the AAP AWS credential injects keys but not a region.
+          amazon.aws.s3_bucket:
+            name: "{{ aws_tf_state_bucket }}"
+            region: "{{ aws_region }}"
+            state: present
+            versioning: true
+            public_access:
+              block_public_acls: true
+              ignore_public_acls: true
+              block_public_policy: true
+              restrict_public_buckets: true
+
         - name: Initialize Terraform (S3 backend)
           ansible.builtin.command:
             cmd: >-

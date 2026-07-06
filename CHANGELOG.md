@@ -8,6 +8,13 @@ to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- `playbooks/provision_vm_aws.yml`: idempotent guard task
+  (`amazon.aws.s3_bucket`) that ensures the Terraform state bucket exists before
+  `terraform init`, so node 1 is self-sufficient — no manual `aws s3 mb`
+  prerequisite. Managed in Ansible (not the Terraform stack that uses it as a
+  backend) to avoid the backend chicken-and-egg; enables versioning and blocks
+  public access. Teardown must not delete this bucket (shared, long-lived state).
+
 - Config-as-code: baseline AAP settings applied by the dispatch run, following
   the dc1.azure pattern.
   - `aap_config/files/gateway_settings.yml` — AAP **pre-login message**
