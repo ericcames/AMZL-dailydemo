@@ -63,4 +63,6 @@ jt_harden: "AMZL Daily Demo - 3 Security Hardening"
 jt_devops_user: "AMZL Daily Demo - 4 Create devops User"
 jt_docker_web: "AMZL Daily Demo - 5 Deploy Docker Webserver"
 
+jt_teardown: "AMZL Daily Demo - Teardown (AWS)"
+
 workflow_name: "AMZL Daily Demo - Provision and Configure"

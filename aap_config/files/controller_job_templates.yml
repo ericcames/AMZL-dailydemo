@@ -91,3 +91,16 @@ controller_templates:
     execution_environment: "{{ my_execution_environment }}"
     credentials:
       - "{{ cred_linux }}"
+
+  # ── Teardown: destroy the EC2 instance and clean up AAP inventory ──────────
+  - name: "{{ jt_teardown }}"
+    job_type: run
+    organization: "{{ my_organization }}"
+    inventory: "{{ inventory_name }}"
+    project: "{{ project_name }}"
+    playbook: playbooks/teardown_aws.yml
+    execution_environment: "{{ my_execution_environment }}"
+    credentials:
+      - "{{ cred_aws }}"
+      - "{{ cred_controller }}"
+      - "{{ cred_secrets }}"

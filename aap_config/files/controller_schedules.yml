@@ -1,0 +1,9 @@
+---
+# Daily 6 PM Arizona (MST / UTC-7, no DST) teardown schedule.
+# RRULE uses TZID=America/Phoenix so AAP handles the offset correctly.
+controller_schedules:
+  - name: "AMZL Daily Demo - Nightly Teardown (6 PM AZ)"
+    unified_job_template: "{{ jt_teardown }}"
+    rrule: "DTSTART;TZID=America/Phoenix:20260706T180000 RRULE:FREQ=DAILY;INTERVAL=1"
+    enabled: true
+    description: "Destroy the demo EC2 instance every evening to avoid overnight costs"

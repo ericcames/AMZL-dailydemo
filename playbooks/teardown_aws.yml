@@ -1,0 +1,71 @@
+---
+# ============================================================================
+# playbooks/teardown_aws.yml — destroy the provisioned EC2 instance
+# ============================================================================
+# Runs `terraform destroy` to remove the AWS infrastructure, then cleans the
+# host from the AAP inventory. Designed to run on a schedule (6 PM AZ daily)
+# so demo environments don't accumulate cost overnight.
+#
+# Does NOT delete the S3 state bucket — that is long-lived shared infra.
+# ============================================================================
+
+- name: Tear down the AMZL daily demo environment
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    terraform_dir: "{{ playbook_dir }}/../terraform"
+    amzl_inventory: "{{ inventory_name | default('amzl-dailydemo') }}"
+    amzl_linux_group: "{{ linux_group | default('linux') }}"
+    aws_region: "{{ lookup('ansible.builtin.env', 'AWS_DEFAULT_REGION') | default('us-east-1', true) }}"
+    aws_tf_state_bucket: "{{ lookup('ansible.builtin.env', 'AWS_TF_STATE_BUCKET') }}"
+    linux_admin_username: "{{ lookup('ansible.builtin.env', 'LINUX_ADMIN_USERNAME') | default('ec2-user', true) }}"
+    linux_ssh_public_key: "{{ lookup('ansible.builtin.env', 'LINUX_SSH_PUBLIC_KEY') }}"
+    controller_host: "{{ lookup('ansible.builtin.env', 'CONTROLLER_HOST') | default(lookup('ansible.builtin.env', 'AAP_HOSTNAME'), true) }}"
+    controller_validate_certs: "{{ lookup('ansible.builtin.env', 'CONTROLLER_VERIFY_SSL') | default('false', true) | bool }}"
+
+  tasks:
+    - name: Initialize Terraform (S3 backend)
+      ansible.builtin.command:
+        cmd: >-
+          terraform init -input=false -no-color
+          -backend-config="bucket={{ aws_tf_state_bucket }}"
+          -backend-config="key=amzl-dailydemo.tfstate"
+          -backend-config="region={{ aws_region }}"
+        chdir: "{{ terraform_dir }}"
+      changed_when: false
+
+    - name: Read Terraform outputs (to find the host to deregister)
+      ansible.builtin.command:
+        cmd: terraform output -json
+        chdir: "{{ terraform_dir }}"
+      changed_when: false
+      register: tf_output
+      ignore_errors: true
+
+    - name: Destroy the AWS infrastructure
+      ansible.builtin.command:
+        cmd: >-
+          terraform destroy -input=false -auto-approve -no-color
+          -var linux_admin_username={{ linux_admin_username }}
+        chdir: "{{ terraform_dir }}"
+      environment:
+        AWS_DEFAULT_REGION: "{{ aws_region }}"
+        TF_VAR_linux_ssh_public_key: "{{ linux_ssh_public_key }}"
+      changed_when: true
+
+    - name: Remove the host from the AAP inventory
+      when: tf_output is succeeded
+      block:
+        - name: Parse the hostname from Terraform output
+          ansible.builtin.set_fact:
+            linux_host: "{{ (tf_output.stdout | from_json).linux_inventory.value.host }}"
+
+        - name: Delete the host from AAP
+          ansible.controller.host:
+            controller_host: "{{ controller_host }}"
+            validate_certs: "{{ controller_validate_certs }}"
+            name: "{{ linux_host }}"
+            inventory: "{{ amzl_inventory }}"
+            state: absent

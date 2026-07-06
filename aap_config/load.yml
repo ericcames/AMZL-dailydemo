@@ -33,6 +33,7 @@
     - files/controller_settings.yml
     - files/controller_job_templates.yml
     - files/controller_workflow_job_templates.yml
+    - files/controller_schedules.yml
   tasks:
     - name: Apply all AAP objects via dispatch
       ansible.builtin.include_role:
