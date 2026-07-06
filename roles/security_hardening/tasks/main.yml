@@ -1,0 +1,89 @@
+---
+- name: Install time sync + common utilities
+  ansible.builtin.dnf:
+    name: "{{ security_hardening_packages }}"
+    state: present
+
+- name: Enable and start chrony
+  ansible.builtin.systemd:
+    name: chronyd
+    state: started
+    enabled: true
+
+- name: Enable and start firewalld
+  ansible.builtin.systemd:
+    name: firewalld
+    state: started
+    enabled: true
+
+- name: Allow ssh/http/https through the host firewall
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    permanent: true
+    immediate: true
+    state: enabled
+    zone: public
+  loop:
+    - ssh
+    - http
+    - https
+
+- name: Install the SSH login banner
+  ansible.builtin.copy:
+    src: sshd-banner
+    dest: /etc/ssh/sshd-banner
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Point sshd at the login banner
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?Banner '
+    line: "Banner /etc/ssh/sshd-banner"
+    validate: "sshd -t -f %s"
+  notify: Reload sshd
+
+- name: Disable direct root SSH login
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PermitRootLogin '
+    line: "PermitRootLogin no"
+    validate: "sshd -t -f %s"
+  notify: Reload sshd
+
+- name: Install the /etc/issue login banner
+  ansible.builtin.copy:
+    src: issue
+    dest: /etc/issue
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Install the /etc/motd message of the day
+  ansible.builtin.copy:
+    src: motd
+    dest: /etc/motd
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Install dnf-automatic for unattended security updates
+  ansible.builtin.dnf:
+    name: dnf-automatic
+    state: present
+
+- name: Configure dnf-automatic to apply security updates only
+  ansible.builtin.lineinfile:
+    path: /etc/dnf/automatic.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - {regexp: '^upgrade_type', line: 'upgrade_type = security'}
+    - {regexp: '^apply_updates', line: 'apply_updates = yes'}
+
+- name: Enable the dnf-automatic timer
+  ansible.builtin.systemd:
+    name: dnf-automatic.timer
+    state: started
+    enabled: true

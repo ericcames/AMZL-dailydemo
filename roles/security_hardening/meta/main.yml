@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  role_name: security_hardening
+  author: Eric Ames (ericcames)
+  description: Native security best practices for Amazon Linux 2023 (chrony, firewalld, SSH hardening, banners, unattended security updates).
+  license: Apache-2.0
+  min_ansible_version: "2.16"
+  platforms:
+    - name: Amazon
+      versions:
+        - all
+dependencies: []

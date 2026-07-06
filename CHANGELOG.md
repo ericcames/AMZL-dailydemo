@@ -8,6 +8,14 @@ to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Workflow playbooks (`playbooks/`): `provision_vm_aws.yml` (Terraform wrapper +
+  AAP host registration), `patch_amzl.yml` (dnf `--releasever` pin), plus
+  `security_hardening.yml`, `create_devops_user.yml`, `deploy_docker_webserver.yml`.
+- Roles: `security_hardening` (chrony, firewalld, SSH banners/PermitRootLogin,
+  dnf-automatic), `devops_user` (wheel+docker, NOPASSWD sudo, authorized key),
+  `docker_webserver` (Docker + UBI9 httpd container, ported daily-demo index.html).
+  yamllint + ansible-lint (production profile) pass.
+
 - Terraform stack (`terraform/`) for an Amazon Linux 2023 EC2 instance: VPC +
   public subnet + IGW + security group + SSH key pair, AL2023 AMI resolved from
   the AWS SSM public parameter, t-shirt sizing (small/medium/large), and S3

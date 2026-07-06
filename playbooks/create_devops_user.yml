@@ -1,0 +1,21 @@
+---
+# ============================================================================
+# playbooks/create_devops_user.yml — workflow node 4
+# ============================================================================
+# Create the reusable `devops` account: member of wheel + docker, the team
+# default password, passwordless sudo (NOPASSWD), and an authorized SSH key so
+# you can SSH in from your workstation.
+#
+# Secrets are injected into the job env by the "AMZL Daily Demo - Secrets"
+# custom credential and read via env lookups (see roles/devops_user/defaults):
+#   DEVOPS_PASSWORD        team default password (plaintext; hashed on the host)
+#   LINUX_SSH_PUBLIC_KEY   public key authorized for the devops user
+# ============================================================================
+
+- name: Create the devops user
+  hosts: "{{ target_hosts | default('linux') }}"
+  gather_facts: true
+  become: true
+
+  roles:
+    - role: devops_user

@@ -11,8 +11,8 @@ create `devops` user → deploy a Docker webserver, all as config-as-code.
 |-------|-------|--------|
 | 0 | Repo scaffold + community standards | ✅ Complete |
 | 1 | Execution Environment (Terraform CLI + collections) — build & push to quay.io | 🔄 Definition done; build/push pending registry logins |
-| 2 | Terraform stack for AL2023 + `provision_vm_aws.yml` (node 1) | ⬜ Not started |
-| 3 | Playbooks: patch, harden, create devops user, deploy Docker web (nodes 2–5) | ⬜ Not started |
+| 2 | Terraform stack for AL2023 + `provision_vm_aws.yml` (node 1) | ✅ Complete |
+| 3 | Playbooks: patch, harden, create devops user, deploy Docker web (nodes 2–5) | ✅ Complete |
 | 4 | `aap_config/` CaC — 5 job templates + 5-node workflow + credentials/inventory/EE | ⬜ Not started |
 | 5 | Load CaC + end-to-end dry run against the live AWS open env | ⬜ Not started |
 

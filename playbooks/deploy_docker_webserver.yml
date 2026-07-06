@@ -1,0 +1,16 @@
+---
+# ============================================================================
+# playbooks/deploy_docker_webserver.yml — workflow node 5
+# ============================================================================
+# Install the Docker engine, ensure the devops user is in the docker group,
+# then pull and run a UBI9 httpd container serving the standard daily-demo
+# web page.
+# ============================================================================
+
+- name: Deploy a webserver in a Docker container
+  hosts: "{{ target_hosts | default('linux') }}"
+  gather_facts: true
+  become: true
+
+  roles:
+    - role: docker_webserver

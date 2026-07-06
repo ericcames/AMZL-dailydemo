@@ -1,0 +1,17 @@
+---
+# ============================================================================
+# playbooks/security_hardening.yml — workflow node 3
+# ============================================================================
+# Apply security best practices to the AL2023 host(s): time sync (chrony),
+# host firewall (firewalld), SSH hardening + login banners, common utilities,
+# and unattended security updates. Native modules only — AL2023 is not a
+# supported redhat.rhel_system_roles platform.
+# ============================================================================
+
+- name: Apply security best practices to Amazon Linux 2023
+  hosts: "{{ target_hosts | default('linux') }}"
+  gather_facts: true
+  become: true
+
+  roles:
+    - role: security_hardening

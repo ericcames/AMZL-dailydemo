@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  role_name: docker_webserver
+  author: Eric Ames (ericcames)
+  description: Install Docker on Amazon Linux 2023 and run a UBI9 httpd container serving the daily-demo web page.
+  license: Apache-2.0
+  min_ansible_version: "2.16"
+  platforms:
+    - name: Amazon
+      versions:
+        - all
+dependencies: []

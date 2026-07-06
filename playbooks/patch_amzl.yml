@@ -1,0 +1,50 @@
+---
+# ============================================================================
+# playbooks/patch_amzl.yml — workflow node 2
+# ============================================================================
+# Patch the Amazon Linux 2023 host(s). AL2023 supports deterministic upgrades
+# via versioned repos, so `target_release` (a survey field) pins the box to a
+# specific release (e.g. 2023.5.20240701); leave it "latest" for the newest.
+#
+# Inputs (survey / extra_vars):
+#   target_release   AL2023 version string, or "latest" (default)
+# ============================================================================
+
+- name: Patch Amazon Linux 2023 to the target release
+  hosts: "{{ target_hosts | default('linux') }}"
+  gather_facts: true
+  become: true
+
+  vars:
+    target_release: "{{ amzl_target_release | default('latest') }}"
+
+  tasks:
+    - name: Ensure dnf-utils is present (provides needs-restarting)
+      ansible.builtin.dnf:
+        name: dnf-utils
+        state: present
+
+    - name: Patch to a pinned AL2023 release
+      when: target_release != 'latest'
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+        releasever: "{{ target_release }}"
+
+    - name: Patch to the latest AL2023 release
+      when: target_release == 'latest'
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+
+    - name: Check whether a reboot is required
+      ansible.builtin.command: needs-restarting -r
+      register: needs_restarting
+      changed_when: false
+      failed_when: false
+
+    - name: Reboot if the update requires it
+      when: needs_restarting.rc == 1
+      ansible.builtin.reboot:
+        msg: "Rebooting after patching to {{ target_release }}"
+        reboot_timeout: 600

@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  role_name: devops_user
+  author: Eric Ames (ericcames)
+  description: Create a reusable devops user with wheel + docker membership, passwordless sudo, and an authorized SSH key.
+  license: Apache-2.0
+  min_ansible_version: "2.16"
+  platforms:
+    - name: Amazon
+      versions:
+        - all
+dependencies: []

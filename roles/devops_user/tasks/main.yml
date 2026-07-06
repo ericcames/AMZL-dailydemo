@@ -1,0 +1,40 @@
+---
+- name: Assert the devops secrets are available
+  ansible.builtin.assert:
+    that:
+      - devops_user_password | length > 0
+      - devops_user_ssh_public_key | length > 0
+    fail_msg: >-
+      DEVOPS_PASSWORD and LINUX_SSH_PUBLIC_KEY must be set — attach the
+      "AMZL Daily Demo - Secrets" credential to the job template.
+
+- name: Ensure the devops supplementary groups exist
+  ansible.builtin.group:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ devops_user_groups }}"
+
+- name: Create the devops user
+  ansible.builtin.user:
+    name: "{{ devops_user_username }}"
+    password: "{{ devops_user_password | password_hash('sha512') }}"
+    update_password: on_create
+    groups: "{{ devops_user_groups }}"
+    append: true
+    shell: /bin/bash
+    create_home: true
+
+- name: Authorize the SSH public key for devops
+  ansible.posix.authorized_key:
+    user: "{{ devops_user_username }}"
+    key: "{{ devops_user_ssh_public_key }}"
+    state: present
+
+- name: Grant passwordless sudo to devops
+  ansible.builtin.copy:
+    dest: "/etc/sudoers.d/{{ devops_user_username }}"
+    content: "{{ devops_user_username }} ALL=(ALL) NOPASSWD: ALL\n"
+    owner: root
+    group: root
+    mode: "0440"
+    validate: "visudo -cf %s"

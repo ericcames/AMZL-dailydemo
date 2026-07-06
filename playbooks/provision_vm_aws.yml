@@ -1,0 +1,154 @@
+---
+# ============================================================================
+# playbooks/provision_vm_aws.yml — workflow node 1
+# ============================================================================
+# Terraform wrapper: provisions an Amazon Linux 2023 EC2 instance on AWS, then
+# registers it in the AAP `amzl-dailydemo` inventory so the downstream workflow
+# nodes (patch, harden, create devops user, deploy docker web) can target it.
+#
+# Runs FROM AAP on the custom EE (which carries the terraform CLI). Host
+# registration authenticates via the injected "Red Hat Ansible Automation
+# Platform" credential (CONTROLLER_HOST / CONTROLLER_USERNAME / CONTROLLER_PASSWORD
+# in the job env) — no token minting, so the EE does not need ansible.platform.
+#
+# Inputs (survey / extra_vars):
+#   vm_size_tier   small | medium | large  (maps to EC2 instance type)
+#
+# Required job-template credentials:
+#   AMZL Daily Demo - AWS         (AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY)
+#   AMZL Daily Demo - Controller  (Red Hat AAP credential — CONTROLLER_* env)
+# ============================================================================
+
+- name: Provision an Amazon Linux 2023 EC2 instance on AWS (Terraform)
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    terraform_dir: "{{ playbook_dir }}/../terraform"
+    amzl_inventory: "{{ inventory_name | default('amzl-dailydemo') }}"
+    amzl_linux_group: "{{ linux_group | default('linux') }}"
+    vm_size_tier: "{{ vm_size | default('medium') }}"
+    aws_region: "{{ lookup('ansible.builtin.env', 'AWS_DEFAULT_REGION') | default('us-east-1', true) }}"
+    aws_tf_state_bucket: "{{ lookup('ansible.builtin.env', 'AWS_TF_STATE_BUCKET') }}"
+    linux_ssh_public_key: "{{ lookup('ansible.builtin.env', 'LINUX_SSH_PUBLIC_KEY') }}"
+    linux_admin_username: "{{ lookup('ansible.builtin.env', 'LINUX_ADMIN_USERNAME') | default('ec2-user', true) }}"
+    controller_host: "{{ lookup('ansible.builtin.env', 'CONTROLLER_HOST') | default(lookup('ansible.builtin.env', 'AAP_HOSTNAME'), true) }}"
+    controller_validate_certs: "{{ lookup('ansible.builtin.env', 'CONTROLLER_VERIFY_SSL') | default('false', true) | bool }}"
+
+  tasks:
+    - name: Provision the VM and register it in AAP
+      block:
+        - name: Assert provisioning inputs are present
+          ansible.builtin.assert:
+            that:
+              - vm_size_tier in ['small', 'medium', 'large']
+              - aws_tf_state_bucket | length > 0
+              - linux_ssh_public_key | length > 0
+            fail_msg: >-
+              Need vm_size_tier (small|medium|large), AWS_TF_STATE_BUCKET, and
+              LINUX_SSH_PUBLIC_KEY.
+
+        - name: Initialize Terraform (S3 backend)
+          ansible.builtin.command:
+            cmd: >-
+              terraform init -input=false -no-color
+              -backend-config="bucket={{ aws_tf_state_bucket }}"
+              -backend-config="key=amzl-dailydemo.tfstate"
+              -backend-config="region={{ aws_region }}"
+            chdir: "{{ terraform_dir }}"
+          changed_when: false
+
+        - name: Apply Terraform (create the EC2 instance)
+          ansible.builtin.command:
+            cmd: >-
+              terraform apply -input=false -auto-approve -no-color
+              -var vm_size_tier={{ vm_size_tier }}
+              -var linux_admin_username={{ linux_admin_username }}
+            chdir: "{{ terraform_dir }}"
+          environment:
+            # The AAP AWS credential injects AWS_ACCESS_KEY_ID/SECRET but NOT a
+            # region; providers.tf reads the region from AWS_DEFAULT_REGION, so
+            # set it here. TF_VAR_ passes the SSH public key without committing it.
+            AWS_DEFAULT_REGION: "{{ aws_region }}"
+            TF_VAR_linux_ssh_public_key: "{{ linux_ssh_public_key }}"
+          no_log: true
+          changed_when: true
+          register: tf_apply_result
+          ignore_errors: true
+
+        - name: Show Terraform error (if apply failed)
+          when: tf_apply_result is failed
+          ansible.builtin.debug:
+            msg: "{{ tf_apply_result.stderr_lines | default(tf_apply_result.stderr | default('no stderr') | split('\n')) }}"
+
+        - name: Fail if Terraform apply failed
+          when: tf_apply_result is failed
+          ansible.builtin.fail:
+            msg: "terraform apply exited {{ tf_apply_result.rc | default('?') }}"
+
+        - name: Read Terraform outputs
+          ansible.builtin.command:
+            cmd: terraform output -json
+            chdir: "{{ terraform_dir }}"
+          changed_when: false
+          register: tf_output
+
+        - name: Parse inventory output
+          ansible.builtin.set_fact:
+            linux_inventory: "{{ (tf_output.stdout | from_json).linux_inventory.value }}"
+
+        - name: Ensure the linux group exists
+          ansible.controller.group:
+            controller_host: "{{ controller_host }}"
+            validate_certs: "{{ controller_validate_certs }}"
+            name: "{{ amzl_linux_group }}"
+            inventory: "{{ amzl_inventory }}"
+            state: present
+            variables:
+              ansible_connection: ssh
+              ansible_port: 22
+
+        - name: Add the EC2 instance as a host
+          ansible.controller.host:
+            controller_host: "{{ controller_host }}"
+            validate_certs: "{{ controller_validate_certs }}"
+            name: "{{ linux_inventory.host }}"
+            inventory: "{{ amzl_inventory }}"
+            enabled: true
+            state: present
+            variables:
+              ansible_host: "{{ linux_inventory.ansible_host }}"
+              ansible_user: "{{ linux_inventory.ansible_user }}"
+              vm_name: "{{ linux_inventory.vm_name }}"
+              instance_id: "{{ linux_inventory.instance_id }}"
+              vm_size_chosen: "{{ linux_inventory.vm_size_chosen }}"
+
+        - name: Associate the host with the linux group
+          ansible.controller.group:
+            controller_host: "{{ controller_host }}"
+            validate_certs: "{{ controller_validate_certs }}"
+            name: "{{ amzl_linux_group }}"
+            inventory: "{{ amzl_inventory }}"
+            hosts:
+              - "{{ linux_inventory.host }}"
+            state: present
+
+        - name: Pass provisioning details to the rest of the workflow
+          ansible.builtin.set_stats:
+            data:
+              linux_fqdn: "{{ linux_inventory.host }}"
+              linux_public_ip: "{{ linux_inventory.ansible_host }}"
+              linux_instance_id: "{{ linux_inventory.instance_id }}"
+              linux_vm_name: "{{ linux_inventory.vm_name }}"
+              linux_vm_size_chosen: "{{ linux_inventory.vm_size_chosen }}"
+              linux_admin_username: "{{ linux_inventory.ansible_user }}"
+
+      rescue:
+        - name: Show the failure
+          ansible.builtin.debug:
+            msg: "Provisioning failed: {{ ansible_failed_result.msg | default('see the Terraform error above') }}"
+
+        - name: Re-fail so the workflow takes its failure path
+          ansible.builtin.fail:
+            msg: "Provisioning failed — the workflow will stop here."

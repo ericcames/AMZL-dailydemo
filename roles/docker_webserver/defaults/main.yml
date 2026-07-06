@@ -1,0 +1,10 @@
+---
+# UBI9 httpd container — anonymous-pullable from registry.access.redhat.com, so
+# no registry entitlement is needed at demo time. It serves /var/www/html and
+# listens on 8080 inside the container.
+docker_webserver_image: "registry.access.redhat.com/ubi9/httpd-24:latest"
+docker_webserver_container_name: amzl-web
+docker_webserver_host_port: 80
+docker_webserver_container_port: 8080
+docker_webserver_content_dir: /opt/amzl-web
+docker_webserver_user: devops

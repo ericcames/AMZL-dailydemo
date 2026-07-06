@@ -1,0 +1,14 @@
+---
+# Packages installed for time sync + a baseline of common admin utilities.
+# curl is intentionally omitted — AL2023 ships curl-minimal and installing curl
+# creates a conflict.
+security_hardening_packages:
+  - chrony
+  - firewalld
+  - vim-enhanced
+  - git
+  - wget
+  - bind-utils
+  - tar
+  - unzip
+  - dnf-utils
