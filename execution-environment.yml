@@ -8,11 +8,14 @@
 #
 # BUILD (local):
 #   ansible-builder build -f execution-environment.yml \
-#                         -t amzl-dailydemo-ee:latest --prune-images
+#                         -t amzl-dailydemo-ee:latest --prune-images \
+#                         --build-arg PYCMD=/usr/bin/python3.11
 #
-#   NOTE: unlike the lightspeed EE, this image does NOT bake
-#   redhat.rhel_system_roles, so there is no `dnf` bindep dragging in Python 3.9
-#   — the PYCMD=/usr/bin/python3.11 build-arg workaround is not needed here.
+#   The PYCMD build-arg is REQUIRED: on the ee-minimal-rhel9 base, /usr/bin/python3
+#   is the system Python 3.9 (no pip), while ansible-core runs on 3.11. The
+#   assemble step's `pip install` defaults to PYCMD=/usr/bin/python3 (3.9) and
+#   fails with "No module named pip". Pinning PYCMD to python3.11 runs assemble on
+#   the interpreter that has pip.
 #
 # PREREQUISITES:
 #   - ansible-builder installed:  pip install ansible-builder
