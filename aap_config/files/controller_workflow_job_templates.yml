@@ -39,13 +39,12 @@ controller_workflows:
           variable: amzl_target_release
           type: multiplechoice
           required: true
-          default: latest
+          default: "2023.12.20260622"
           choices:
             - latest
             - "2023.12.20260629"
             - "2023.12.20260622"
             - "2023.12.20260611"
-            - "2023.12.20260608"
     simplified_workflow_nodes:
       - identifier: provision
         unified_job_template: "{{ jt_provision }}"

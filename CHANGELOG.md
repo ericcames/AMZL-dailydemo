@@ -6,6 +6,22 @@ to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Terraform AMI: pinned to AL2023 release `2023.12.20260608` (via `aws_ami`
+  data source + `al2023_release` variable) instead of always fetching the
+  latest AMI from SSM. This ensures the patch playbook has room to demonstrate
+  `dnf update --releasever` moving the host forward to the survey-selected
+  release. Previously the latest AMI was already at or past the target release,
+  making the patch a no-op.
+
+- Patch JT survey: changed from free-text to multiplechoice matching the
+  workflow survey — prevents typos that would 404 the AL2023 mirror.
+
+- Survey defaults: both the workflow and patch JT now default to
+  `2023.12.20260622` instead of `latest`, and the `2023.12.20260608` choice
+  is removed (it matches the AMI baseline and would be a no-op).
+
 ### Fixed
 
 - `devops_user` role: hash the devops password on the target host with `openssl

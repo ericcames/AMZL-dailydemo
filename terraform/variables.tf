@@ -1,3 +1,9 @@
+variable "al2023_release" {
+  description = "AL2023 release version to pin the AMI to (e.g. 2023.12.20260608). Pinning below the latest AMI gives the patch playbook room to demonstrate 'dnf update --releasever' moving the host forward."
+  type        = string
+  default     = "2023.12.20260608"
+}
+
 variable "vm_size_tier" {
   description = "T-shirt size selected by the user in the AAP JT survey."
   type        = string

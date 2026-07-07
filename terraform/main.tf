@@ -105,7 +105,7 @@ resource "aws_key_pair" "demo" {
 # ---------------------------------------------------------------------------
 
 resource "aws_instance" "amzl" {
-  ami                    = data.aws_ssm_parameter.al2023.value
+  ami                    = data.aws_ami.al2023.id
   instance_type          = local.instance_type
   subnet_id              = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.demo.id]

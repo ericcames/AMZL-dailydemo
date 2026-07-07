@@ -52,11 +52,16 @@ controller_templates:
       description: "Target AL2023 release"
       spec:
         - question_name: Target release
-          question_description: "AL2023 version to patch to (e.g. 2023.5.20240701), or 'latest'"
+          question_description: "AL2023 release to patch to ('latest' for newest, or pin to a specific tested release)"
           variable: amzl_target_release
-          type: text
-          required: false
-          default: latest
+          type: multiplechoice
+          required: true
+          default: "2023.12.20260622"
+          choices:
+            - latest
+            - "2023.12.20260629"
+            - "2023.12.20260622"
+            - "2023.12.20260611"
 
   # ── Node 3: Security hardening ──────────────────────────────────────────────
   - name: "{{ jt_harden }}"

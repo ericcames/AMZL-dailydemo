@@ -4,8 +4,10 @@
 # ============================================================================
 # Patch the Amazon Linux 2023 host(s). AL2023 supports deterministic upgrades
 # via versioned repos, so `target_release` (a survey field) pins the box to a
-# specific release (e.g. 2023.12.20260629); leave it "latest" for the newest.
-# Note: dnf update only moves forward, so pinning below the AMI baseline no-ops.
+# specific release (e.g. 2023.12.20260622); leave it "latest" for the newest.
+# The AMI is pinned to an older release (see terraform/variables.tf) so there
+# is always room to patch forward — the survey choices are all newer than the
+# AMI baseline.
 #
 # Inputs (survey / extra_vars):
 #   target_release   AL2023 version string, or "latest" (default)
