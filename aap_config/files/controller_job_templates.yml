@@ -12,7 +12,7 @@ controller_templates:
   - name: "{{ jt_provision }}"
     job_type: run
     organization: "{{ my_organization }}"
-    inventory: "{{ inventory_name }}"
+    inventory: "{{ control_inventory_name }}"
     project: "{{ project_name }}"
     playbook: playbooks/provision_vm_aws.yml
     execution_environment: "{{ my_execution_environment }}"
@@ -96,7 +96,7 @@ controller_templates:
   - name: "{{ jt_teardown }}"
     job_type: run
     organization: "{{ my_organization }}"
-    inventory: "{{ inventory_name }}"
+    inventory: "{{ control_inventory_name }}"
     project: "{{ project_name }}"
     playbook: playbooks/teardown_aws.yml
     execution_environment: "{{ my_execution_environment }}"

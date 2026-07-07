@@ -5,3 +5,10 @@ controller_inventories:
   - name: "{{ inventory_name }}"
     organization: "{{ my_organization }}"
     variables: {}
+
+  # Empty control inventory for localhost-only job templates (provision,
+  # teardown). AWX provides an implicit localhost, so no host definition is
+  # needed. Using a separate inventory avoids "Resource is being used by
+  # running jobs" errors when teardown deletes hosts from the main inventory.
+  - name: "{{ control_inventory_name }}"
+    organization: "{{ my_organization }}"

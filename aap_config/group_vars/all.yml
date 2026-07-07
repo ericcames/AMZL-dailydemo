@@ -51,6 +51,7 @@ redhat_subscriptions_client_secret: "{{ lookup('ansible.builtin.env', 'REDHAT_SU
 # --- Object names ------------------------------------------------------------
 project_name: "AMZL Daily Demo"
 inventory_name: "amzl-dailydemo"
+control_inventory_name: "amzl-dailydemo-control"
 
 cred_aws: "AMZL Daily Demo - AWS"
 cred_linux: "AMZL Daily Demo - Machine"
