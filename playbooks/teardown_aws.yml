@@ -41,8 +41,18 @@
         cmd: terraform output -json
         chdir: "{{ terraform_dir }}"
       changed_when: false
+      failed_when: false
       register: tf_output
-      ignore_errors: true
+
+    - name: Record VM FQDN before destroy (if state still exists)
+      when:
+        - tf_output.rc == 0
+        - tf_output.stdout | default('') | length > 0
+        - (tf_output.stdout | from_json).linux_inventory is defined
+      block:
+        - name: Parse the hostname from Terraform output
+          ansible.builtin.set_fact:
+            linux_host: "{{ (tf_output.stdout | from_json).linux_inventory.value.host }}"
 
     - name: Destroy the AWS infrastructure
       ansible.builtin.command:
@@ -56,12 +66,8 @@
       changed_when: true
 
     - name: Remove the host from the AAP inventory
-      when: tf_output is succeeded
+      when: linux_host is defined and linux_host is string
       block:
-        - name: Parse the hostname from Terraform output
-          ansible.builtin.set_fact:
-            linux_host: "{{ (tf_output.stdout | from_json).linux_inventory.value.host }}"
-
         - name: Delete the host from AAP
           ansible.controller.host:
             controller_host: "{{ controller_host }}"
