@@ -11,7 +11,7 @@ environment, and you do **not** create the AWS state bucket by hand — both are
 handled for you (details below).
 
 > New to the whole flow? Read top to bottom once. Already have AAP + AWS from
-> RHDP and just want the commands? Jump to [Step 4](#step-4-load-every-aap-object).
+> RHDP and just want the commands? Jump to [Step 4](#step-4--load-every-aap-object).
 
 ---
 
@@ -46,7 +46,7 @@ Re-running `load.yml` is **idempotent** — safe to run as many times as you lik
 
 The custom execution environment is **already built and published publicly**, so
 there is nothing for you to build — AAP pulls it straight from quay.io. (Building
-it is a maintainer task only; see [Rebuilding the EE](#appendix-rebuilding-the-ee-maintainers-only).)
+it is a maintainer task only; see [Rebuilding the EE](#appendix--rebuilding-the-ee-maintainers-only).)
 
 ---
 
