@@ -6,11 +6,16 @@ loaded with a single `load.yml`.
 
 ## Setup (before the customer joins)
 
+First time loading this into AAP? Follow **[loading-aap.md](loading-aap.md)**.
+Once it's loaded, the pre-demo checklist is:
+
 1. `source docs/dev-environment.sh`
-2. Confirm the EE is published: `quay.io/zigfreed/amzl-dailydemo-ee:v1.0.0`
-3. `ansible-playbook aap_config/load.yml` — creates the org, credentials, project,
-   inventory, EE, 5 job templates, and the workflow.
-4. In AAP, open **Templates → AMZL Daily Demo - Provision and Configure**.
+2. `ansible-playbook aap_config/load.yml` — idempotently creates the org,
+   credentials, project, both inventories, EE, 6 job templates, the workflow, and
+   the nightly-teardown schedule. (The EE is the public
+   `quay.io/zigfreed/amzl-dailydemo-ee:v1.0.0` image — nothing to build.)
+3. In AAP, **Sync** the `AMZL Daily Demo` project so it has the latest playbooks.
+4. Open **Templates → AMZL Daily Demo - Provision and Configure**.
 
 ## The story
 
@@ -21,9 +26,10 @@ loaded with a single `load.yml`.
 
 ### 1. Launch the workflow
 Launch **AMZL Daily Demo - Provision and Configure**. The single survey asks two
-questions:
+questions, both drop-downs:
 - **VM size** (small / medium / large)
-- **Target release** (an AL2023 version, or `latest`)
+- **Target release** — a menu of tested AL2023 releases (or `latest`), defaulting
+  to a **pinned point release** so every run lands on the same known build
 
 ### 2. Node 1 — Provision (Terraform)
 > "Step one provisions the VM with **Terraform**, running inside AAP. Same IaC
@@ -63,6 +69,11 @@ showing the host it's running on.
 
 ## Reset between runs
 
-There is no teardown workflow yet (fast-follow). To reset manually:
-`cd terraform && terraform destroy` (with the same `-backend-config` init), then
-remove the host from the `amzl-dailydemo` inventory.
+A **Teardown (AWS)** job template runs `terraform destroy` and deregisters the
+host from the `amzl-dailydemo` inventory. It's wired to a schedule —
+**Nightly Teardown (6 PM AZ)** — so the demo EC2 instance is destroyed every
+evening to avoid overnight cost. To reset on demand, just launch the teardown job
+template. (It never deletes the shared S3 state bucket.)
+
+> Optional talking point: "The same platform that stood this up tears it down on a
+> schedule — cost control is automation too."

@@ -22,6 +22,10 @@ to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   layout to show roles under `playbooks/roles/`.
 - ROADMAP: marked Phase 5 complete (all 5 workflow nodes verified end-to-end) and
   moved the now-shipped teardown JT/schedule out of the deferred list.
+- Talk track: refreshed the setup checklist (idempotent load, project sync, public
+  EE), described the target-release survey as a drop-down defaulting to a pinned
+  release, and replaced the stale "no teardown yet" reset section with the shipped
+  Teardown JT + nightly schedule.
 
 ### Changed
 
