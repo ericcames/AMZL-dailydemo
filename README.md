@@ -47,29 +47,32 @@ Any node failing stops the chain.
 
 ## Prerequisites
 
-- An AAP 2.6 environment (this demo targets the **Ansible Product Demos** RHDP
-  catalog item, which provides AAP on OpenShift + an AWS open environment)
-- An AWS account/open environment with an S3 bucket for Terraform state
+- An AAP 2.6 environment + an AWS open environment — both come from the
+  **Ansible Product Demos** RHDP catalog item (AAP on OpenShift + AWS)
 - `~/.ansible.cfg` with an Automation Hub offline token (see `ansible.cfg.example`)
-- Collections installed locally for running CaC: `ansible-galaxy collection install -r aap_config/requirements.yml`
-- The custom Execution Environment built and pushed (see `execution-environment.yml`)
+
+That's it. You **don't** build the execution environment — it's already public
+and pinned (`quay.io/zigfreed/amzl-dailydemo-ee`), and AAP pulls it directly. You
+**don't** create the Terraform state bucket by hand — node 1 of the workflow
+creates it if it's missing.
 
 ## Quickstart
+
+Load every AAP object as config-as-code by running one playbook. **New to this?**
+Follow the full walkthrough in **[docs/loading-aap.md](docs/loading-aap.md)** — it
+starts from ordering the RHDP environment. The short version:
 
 ```bash
 # 1. Configure your environment (never committed)
 cp docs/dev-environment.sh.example docs/dev-environment.sh
-$EDITOR docs/dev-environment.sh          # AAP host, AWS keys, S3 bucket, SSH keys, DEVOPS_PASSWORD
+$EDITOR docs/dev-environment.sh          # AAP host, AWS keys, unique S3 bucket name, SSH keys, DEVOPS_PASSWORD
 source docs/dev-environment.sh
 
-# 2. One-time: create the Terraform state bucket
-aws s3 mb s3://$AWS_TF_STATE_BUCKET --region $AWS_DEFAULT_REGION
-
-# 3. Load every AAP object as config-as-code
+# 2. Load every AAP object as config-as-code (idempotent)
 ansible-galaxy collection install -r aap_config/requirements.yml
 ansible-playbook aap_config/load.yml
 
-# 4. In AAP, launch the workflow job template:
+# 3. In AAP: Sync the "AMZL Daily Demo" project, then launch the workflow:
 #    "AMZL Daily Demo - Provision and Configure"
 ```
 
@@ -79,7 +82,7 @@ ansible-playbook aap_config/load.yml
 aap_config/        Config-as-code — projects, inventory, credentials, JTs, workflow, EE
 terraform/         AWS VPC + AL2023 EC2 stack (S3 remote state, t-shirt sizing)
 playbooks/         The 5 workflow playbooks + supporting plays
-roles/             Reusable roles (security_hardening, devops_user, docker_webserver)
+playbooks/roles/   Reusable roles (security_hardening, devops_user, docker_webserver)
 execution-environment.yml   ansible-builder definition (Terraform CLI + collections)
 collections/       Collections baked into the EE / used at runtime
 docs/              dev-environment.sh.example, talk track

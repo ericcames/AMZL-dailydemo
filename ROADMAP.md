@@ -14,7 +14,7 @@ create `devops` user → deploy a Docker webserver, all as config-as-code.
 | 2 | Terraform stack for AL2023 + `provision_vm_aws.yml` (node 1) | ✅ Complete |
 | 3 | Playbooks: patch, harden, create devops user, deploy Docker web (nodes 2–5) | ✅ Complete |
 | 4 | `aap_config/` CaC — 5 job templates + 5-node workflow + credentials/inventory/EE | ✅ Complete |
-| 5 | Load CaC + end-to-end dry run against the live AWS open env | 🔄 **In progress** — CaC loads clean (`load.yml`); state bucket now auto-created by a guard in node 1 (no manual `aws s3 mb`). Workflow nodes 1–4 pass; **node 5 (deploy Docker web) not yet validated**. Baseline settings (login banner + Automation Analytics) live and verified. |
+| 5 | Load CaC + end-to-end dry run against the live AWS open env | ✅ Complete — CaC loads clean (`load.yml`); state bucket auto-created by a guard in node 1 (no manual `aws s3 mb`). **All 5 workflow nodes pass end-to-end**, including node 5 (deploy Docker web). Baseline settings (login banner + Automation Analytics) live and verified. New-user load walkthrough documented in `docs/loading-aap.md`. |
 
 ## Decisions Log
 
@@ -58,6 +58,14 @@ create `devops` user → deploy a Docker webserver, all as config-as-code.
 
 ## Deferred / fast-follow
 
-- Teardown workflow (`terraform destroy` + inventory cleanup).
 - Post-load CaC validation play.
 - Retro-file GitHub Issues if teammates start contributing.
+
+## Done since Phase 5
+
+- Teardown JT (`Teardown (AWS)`, `terraform destroy` + inventory cleanup) with a
+  nightly 6 PM Arizona schedule to avoid overnight EC2 cost. Guarded against
+  empty Terraform state; never deletes the shared S3 state bucket.
+- New-user documentation: `docs/loading-aap.md` (order RHDP → load CaC → launch),
+  plus README Quickstart corrected (EE is consumed public, not built; no manual
+  `aws s3 mb`).

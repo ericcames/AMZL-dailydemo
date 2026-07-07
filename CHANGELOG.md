@@ -6,6 +6,23 @@ to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- `docs/loading-aap.md` — a step-by-step walkthrough for a new Ansible user to
+  load every AAP object as config-as-code, from ordering the RHDP environment
+  through launching the workflow. Enumerates the objects `load.yml` creates and
+  includes a troubleshooting table.
+
+### Documentation
+
+- README: corrected the Quickstart and Prerequisites. Removed the obsolete manual
+  `aws s3 mb` step (node 1 now auto-creates the state bucket) and stopped listing
+  "build the EE" as a prerequisite — the EE is public and pinned, so new users
+  consume it directly. Added a pointer to `docs/loading-aap.md` and fixed the repo
+  layout to show roles under `playbooks/roles/`.
+- ROADMAP: marked Phase 5 complete (all 5 workflow nodes verified end-to-end) and
+  moved the now-shipped teardown JT/schedule out of the deferred list.
+
 ### Changed
 
 - Terraform AMI: pinned to AL2023 release `2023.12.20260608` (via `aws_ami`
