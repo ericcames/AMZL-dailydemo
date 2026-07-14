@@ -1,0 +1,426 @@
+<title>AMZL-dailydemo — Build Session Report</title>
+<style>
+  :root {
+    --ground: #F6F7F9;
+    --panel: #FFFFFF;
+    --panel-2: #FBFCFD;
+    --ink: #151A21;
+    --ink-soft: #3A424E;
+    --muted: #5E6773;
+    --faint: #8A93A0;
+    --hair: #E3E7EC;
+    --hair-strong: #D2D8DF;
+    --v48: #3A56D4;   /* Opus 4.8 — indigo */
+    --v48-soft: #E7EBFB;
+    --v46: #0C9A72;   /* Opus 4.6 — teal */
+    --v46-soft: #DFF3EC;
+    --spine: #C7CFD9;
+    --shadow: 0 1px 2px rgba(20,26,33,.04), 0 8px 24px rgba(20,26,33,.06);
+    --mono: ui-monospace, "SF Mono", "SFMono-Regular", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #0D1017;
+      --panel: #151A22;
+      --panel-2: #11161D;
+      --ink: #E8ECF2;
+      --ink-soft: #C2C9D3;
+      --muted: #939DAA;
+      --faint: #6B7482;
+      --hair: #232A34;
+      --hair-strong: #2E3742;
+      --v48: #7C90F2;
+      --v48-soft: #1B2340;
+      --v46: #35C79A;
+      --v46-soft: #10312A;
+      --spine: #333C48;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"] {
+    --ground: #F6F7F9; --panel: #FFFFFF; --panel-2: #FBFCFD;
+    --ink: #151A21; --ink-soft: #3A424E; --muted: #5E6773; --faint: #8A93A0;
+    --hair: #E3E7EC; --hair-strong: #D2D8DF;
+    --v48: #3A56D4; --v48-soft: #E7EBFB; --v46: #0C9A72; --v46-soft: #DFF3EC;
+    --spine: #C7CFD9; --shadow: 0 1px 2px rgba(20,26,33,.04), 0 8px 24px rgba(20,26,33,.06);
+  }
+  :root[data-theme="dark"] {
+    --ground: #0D1017; --panel: #151A22; --panel-2: #11161D;
+    --ink: #E8ECF2; --ink-soft: #C2C9D3; --muted: #939DAA; --faint: #6B7482;
+    --hair: #232A34; --hair-strong: #2E3742;
+    --v48: #7C90F2; --v48-soft: #1B2340; --v46: #35C79A; --v46-soft: #10312A;
+    --spine: #333C48; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: clamp(28px, 5vw, 64px) clamp(18px, 4vw, 40px) 80px; }
+
+  /* ---- Header ---- */
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--v46); display: inline-block; }
+  h1 {
+    font-size: clamp(30px, 6vw, 50px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 18px 0 0;
+    text-wrap: balance;
+    font-weight: 680;
+  }
+  h1 .repo { font-family: var(--mono); font-weight: 600; font-size: .82em; letter-spacing: -0.01em; }
+  .thesis {
+    font-size: clamp(17px, 2.4vw, 20px);
+    color: var(--ink-soft);
+    margin: 20px 0 0;
+    max-width: 60ch;
+    text-wrap: pretty;
+  }
+  .thesis b { color: var(--ink); font-weight: 640; }
+
+  /* ---- Stat strip ---- */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--hair);
+    border: 1px solid var(--hair);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 36px 0 8px;
+    box-shadow: var(--shadow);
+  }
+  .stat { background: var(--panel); padding: 18px 16px; }
+  .stat .n {
+    font-family: var(--mono);
+    font-size: clamp(24px, 4.5vw, 32px);
+    font-weight: 620;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .stat .l { font-size: 12px; color: var(--muted); margin-top: 8px; letter-spacing: .02em; }
+  .stat.hl .n { color: var(--v48); }
+
+  /* ---- Section scaffolding ---- */
+  section { margin-top: 52px; }
+  .sec-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    border-bottom: 1px solid var(--hair-strong);
+    padding-bottom: 10px;
+    margin-bottom: 22px;
+  }
+  .sec-head h2 {
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    margin: 0;
+    font-weight: 640;
+  }
+  .sec-head .idx { font-family: var(--mono); font-size: 13px; color: var(--v48); font-weight: 600; }
+  .sec-head .aside { margin-left: auto; font-family: var(--mono); font-size: 12px; color: var(--faint); }
+
+  p.body { color: var(--ink-soft); max-width: 66ch; }
+  p.body b { color: var(--ink); font-weight: 620; }
+  code {
+    font-family: var(--mono);
+    font-size: .88em;
+    background: var(--panel-2);
+    border: 1px solid var(--hair);
+    padding: 1px 5px;
+    border-radius: 5px;
+    color: var(--ink);
+  }
+
+  /* ---- Pipeline ---- */
+  .pipe {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 13px;
+    margin: 4px 0 26px;
+  }
+  .pipe .node {
+    background: var(--panel);
+    border: 1px solid var(--hair-strong);
+    border-radius: 7px;
+    padding: 8px 12px;
+    box-shadow: var(--shadow);
+  }
+  .pipe .arw { color: var(--faint); }
+
+  /* ---- AI panel ---- */
+  .ai {
+    background: var(--panel);
+    border: 1px solid var(--hair);
+    border-radius: 14px;
+    padding: clamp(20px, 3vw, 30px);
+    box-shadow: var(--shadow);
+  }
+  .ai .lead { font-size: 17px; color: var(--ink); margin: 0 0 22px; max-width: 62ch; }
+  .ai .lead b { font-weight: 660; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+  .mv {
+    border: 1px solid var(--hair-strong);
+    border-radius: 11px;
+    padding: 16px 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .mv::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+  .mv.v48::before { background: var(--v48); }
+  .mv.v46::before { background: var(--v46); }
+  .mv.v48 { background: var(--v48-soft); }
+  .mv.v46 { background: var(--v46-soft); }
+  .mv .cnt { font-family: var(--mono); font-size: 30px; font-weight: 640; line-height: 1; font-variant-numeric: tabular-nums; }
+  .mv.v48 .cnt { color: var(--v48); }
+  .mv.v46 .cnt { color: var(--v46); }
+  .mv .who { font-family: var(--mono); font-size: 13px; margin-top: 8px; font-weight: 600; color: var(--ink); }
+  .mv .what { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+
+  .roles { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 28px; }
+  @media (max-width: 620px) { .roles, .split, .stats { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 620px) { .roles { grid-template-columns: 1fr; } }
+  .role { border-top: 1px solid var(--hair); padding-top: 12px; }
+  .role h4 { margin: 0 0 4px; font-size: 13.5px; font-weight: 640; }
+  .role p { margin: 0; font-size: 13.5px; color: var(--muted); }
+
+  /* ---- Timeline ---- */
+  .legend {
+    display: flex; gap: 18px; flex-wrap: wrap;
+    font-family: var(--mono); font-size: 12px; color: var(--muted);
+    margin-bottom: 26px;
+  }
+  .legend .k { display: inline-flex; align-items: center; gap: 7px; }
+  .legend .sw { width: 11px; height: 11px; border-radius: 3px; }
+  .legend .sw.v48 { background: var(--v48); }
+  .legend .sw.v46 { background: var(--v46); }
+
+  .phase { margin-bottom: 10px; }
+  .phase-head {
+    display: flex; align-items: baseline; gap: 12px;
+    margin: 30px 0 6px;
+  }
+  .phase-head:first-of-type { margin-top: 0; }
+  .phase-head .pn {
+    font-family: var(--mono); font-size: 12px; color: var(--faint);
+    letter-spacing: .08em; text-transform: uppercase;
+  }
+  .phase-head .pt { font-size: 15px; font-weight: 640; letter-spacing: -0.01em; }
+  .phase-head .pr { margin-left: auto; font-family: var(--mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .log { list-style: none; margin: 0; padding: 0 0 0 4px; position: relative; }
+  .log::before {
+    content: ""; position: absolute; left: 76px; top: 6px; bottom: 6px;
+    width: 2px; background: var(--spine);
+  }
+  @media (max-width: 560px) { .log::before { left: 8px; } }
+  .row {
+    display: grid;
+    grid-template-columns: 62px 24px 1fr;
+    gap: 12px;
+    align-items: start;
+    padding: 7px 0;
+  }
+  .row .time {
+    font-family: var(--mono); font-size: 12.5px; color: var(--muted);
+    font-variant-numeric: tabular-nums; text-align: right; padding-top: 1px;
+    white-space: nowrap;
+  }
+  .row .marker { position: relative; height: 100%; display: flex; justify-content: center; padding-top: 4px; }
+  .row .marker .pt {
+    width: 11px; height: 11px; border-radius: 50%;
+    border: 2px solid var(--ground);
+    z-index: 1; box-shadow: 0 0 0 1px var(--spine);
+  }
+  .row.v48 .marker .pt { background: var(--v48); box-shadow: 0 0 0 1px var(--v48); }
+  .row.v46 .marker .pt { background: var(--v46); box-shadow: 0 0 0 1px var(--v46); }
+  .row .body-cell { min-width: 0; }
+  .row .msg { font-size: 14px; color: var(--ink); line-height: 1.45; }
+  .row .hash {
+    font-family: var(--mono); font-size: 11.5px; color: var(--faint);
+    margin-top: 2px; font-variant-numeric: tabular-nums;
+  }
+  .row.milestone .msg { font-weight: 600; }
+  .tag {
+    display: inline-block; font-family: var(--mono); font-size: 10px;
+    letter-spacing: .06em; text-transform: uppercase; padding: 1px 6px;
+    border-radius: 4px; vertical-align: middle; margin-left: 6px;
+    border: 1px solid var(--hair-strong); color: var(--muted);
+  }
+  .tag.fix { color: var(--v46); border-color: var(--v46); }
+
+  @media (max-width: 560px) {
+    .row { grid-template-columns: 24px 1fr; }
+    .row .time { grid-column: 1 / -1; text-align: left; padding-left: 36px; order: -1; padding-top: 0; color: var(--faint); }
+    .row .marker { grid-row: 2; }
+    .row .body-cell { grid-row: 2; }
+  }
+
+  .gap {
+    display: flex; align-items: center; gap: 12px;
+    margin: 16px 0 16px 76px;
+    font-family: var(--mono); font-size: 12px; color: var(--faint);
+    font-style: normal;
+  }
+  @media (max-width: 560px) { .gap { margin-left: 8px; } }
+  .gap::before, .gap::after { content: ""; height: 1px; background: var(--hair); flex: 0 0 auto; }
+  .gap::before { width: 16px; }
+  .gap span { border: 1px dashed var(--hair-strong); border-radius: 20px; padding: 4px 12px; }
+
+  /* ---- Footer ---- */
+  footer {
+    margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--hair-strong);
+    display: flex; flex-wrap: wrap; gap: 8px 20px; justify-content: space-between;
+    font-family: var(--mono); font-size: 12px; color: var(--faint);
+  }
+  footer .meta { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+  footer b { color: var(--muted); font-weight: 600; }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow"><span class="dot"></span> Build Session Report · Config-as-Code Demo</div>
+    <h1>How <span class="repo">AMZL-dailydemo</span> was built in a single afternoon</h1>
+    <p class="thesis">A reusable <b>Amazon Linux 2023</b> daily demo for Ansible Automation Platform — provisioned, patched, hardened, and served, entirely as config-as-code. <b>26 commits, one 5¼-hour session, 100% AI co-authored.</b></p>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><div class="n">26</div><div class="l">commits, one day</div></div>
+    <div class="stat"><div class="n">5h 15m</div><div class="l">13:06 → 18:21 PDT</div></div>
+    <div class="stat hl"><div class="n">100%</div><div class="l">AI co-authored</div></div>
+    <div class="stat"><div class="n">5</div><div class="l">workflow nodes, all green</div></div>
+  </div>
+
+  <section>
+    <div class="sec-head"><span class="idx">01</span><h2>Executive Summary</h2></div>
+    <div class="pipe">
+      <span class="node">provision</span><span class="arw">→</span>
+      <span class="node">patch</span><span class="arw">→</span>
+      <span class="node">harden</span><span class="arw">→</span>
+      <span class="node">devops user</span><span class="arw">→</span>
+      <span class="node">docker web</span>
+    </div>
+    <p class="body"><b>AMZL-dailydemo</b> delivers a single <b>5-node workflow job template</b> that runs the pipeline above end-to-end. Every AAP object — credentials, project, inventory, job templates, the workflow itself — is config-as-code loaded by <code>aap_config/load.yml</code> via <code>infra.aap_configuration</code>. It runs from AAP on a custom public execution environment (<code>quay.io/zigfreed/amzl-dailydemo-ee</code>) bundling the Terraform CLI plus <code>amazon.aws</code>, <code>ansible.posix</code>, <code>community.docker</code>, and <code>ansible.controller</code>.</p>
+    <p class="body">Scaffolded from <code>aap.lightspeed.patching</code> and reusing roles from <code>aap.dailydemo.F5</code>, it was built to hit a customer demo on <b>Wed Jul 8, 2026, 9:30 PST</b>. Status at session end: <b>complete and demo-ready</b> — all five workflow nodes verified against a live AWS environment, secrets kept out of git via env-var lookups, and a nightly teardown job controlling EC2 cost.</p>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="idx">02</span><h2>AI Involvement</h2></div>
+    <div class="ai">
+      <p class="lead">Every one of the 26 commits carries a <b>Co-Authored-By: Claude</b> trailer. This was a Claude Code pair-programming session — the developer directed and owns each commit; the AI did the hands-on production across two model versions.</p>
+      <div class="split">
+        <div class="mv v48">
+          <div class="cnt">19</div>
+          <div class="who">Claude Opus 4.8</div>
+          <div class="what">Scaffold, EE, Terraform stack, playbooks &amp; roles, the CaC layer, baseline settings, docs.</div>
+        </div>
+        <div class="mv v46">
+          <div class="cnt">7</div>
+          <div class="who">Claude Opus 4.6</div>
+          <div class="what">A mid-session run: Docker SDK fix, webserver page, teardown JT, control inventory, AMI pin.</div>
+        </div>
+      </div>
+      <div class="roles">
+        <div class="role"><h4>Generation</h4><p>Stood up every layer in the opening 23-minute burst — scaffold, EE, Terraform, 5 playbooks, 3 roles, full CaC.</p></div>
+        <div class="role"><h4>Runtime debugging</h4><p>Cracked the AL2023-specific failures: EE python <code>PYCMD</code>, target-side password hashing, the pip-vs-RPM conflict, role-path resolution.</p></div>
+        <div class="role"><h4>Pattern reuse</h4><p>Ported proven conventions from sibling repos — login banner, service-account analytics, teardown guards, control inventory.</p></div>
+        <div class="role"><h4>Governance</h4><p>Kept README / ROADMAP / CHANGELOG in sync and verified no secrets or customer data ever landed in a tracked file.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="idx">03</span><h2>Session Timeline</h2><span class="aside">2026-07-06 · PDT (−0700)</span></div>
+    <div class="legend">
+      <span class="k"><span class="sw v48"></span> Opus 4.8</span>
+      <span class="k"><span class="sw v46"></span> Opus 4.6</span>
+      <span class="k">Author: Eric Ames &lt;ericcames@msn.com&gt;</span>
+    </div>
+
+    <div class="phase">
+      <div class="phase-head"><span class="pn">Phase 1</span><span class="pt">Foundation — stand up every layer</span><span class="pr">13:06 – 13:47</span></div>
+      <ul class="log">
+        <li class="row v48 milestone"><span class="time">13:06</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Scaffold repo — community standards + governance</span><div class="hash">5ab9f2c</div></span></li>
+        <li class="row v48"><span class="time">13:12</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Add Execution Environment definition</span><div class="hash">167b10b</div></span></li>
+        <li class="row v48"><span class="time">13:14</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Add Terraform stack for Amazon Linux 2023</span><div class="hash">943556d</div></span></li>
+        <li class="row v48"><span class="time">13:22</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Add workflow playbooks and roles (nodes 1–5)</span><div class="hash">279a5fe</div></span></li>
+        <li class="row v48"><span class="time">13:28</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Add AAP config-as-code (5 job templates + 5-node workflow)</span><div class="hash">3ad746d</div></span></li>
+        <li class="row v48"><span class="time">13:29</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Add dev-environment template and demo talk track</span><div class="hash">a80fff8</div></span></li>
+        <li class="row v48"><span class="time">13:42</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Fix EE build: require <code>PYCMD=/usr/bin/python3.11</code><span class="tag fix">fix</span></span><div class="hash">b42e525</div></span></li>
+        <li class="row v48"><span class="time">13:47</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Roadmap: EE built + pushed public; mark load as NEXT</span><div class="hash">1e84ef8</div></span></li>
+      </ul>
+    </div>
+
+    <div class="gap"><span>~2h gap — offline EE build &amp; push, first CaC load against live AAP</span></div>
+
+    <div class="phase">
+      <div class="phase-head"><span class="pn">Phase 2</span><span class="pt">Config-as-code &amp; platform baseline</span><span class="pr">15:47 – 16:03</span></div>
+      <ul class="log">
+        <li class="row v48"><span class="time">15:47</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Baseline settings as code: pre-login banner + Automation Analytics</span><div class="hash">7ff44db</div></span></li>
+        <li class="row v48"><span class="time">15:57</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Provision node: guard that ensures the Terraform state bucket exists</span><div class="hash">f54c8cd</div></span></li>
+        <li class="row v48"><span class="time">16:03</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Survey: make Target release a dropdown of recent AL2023 releases</span><div class="hash">2d53bdc</div></span></li>
+      </ul>
+    </div>
+
+    <div class="phase">
+      <div class="phase-head"><span class="pn">Phase 3</span><span class="pt">Debug to green — the real engineering</span><span class="pr">16:21 – 16:46</span></div>
+      <ul class="log">
+        <li class="row v48"><span class="time">16:21</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Fix role resolution (move roles under <code>playbooks/</code>) + drop on-launch sync<span class="tag fix">fix</span></span><div class="hash">2861a9a</div></span></li>
+        <li class="row v48"><span class="time">16:25</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Project CaC: explicitly disable <code>scm_update_on_launch</code></span><div class="hash">5cc49f9</div></span></li>
+        <li class="row v48"><span class="time">16:34</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Fix devops user: hash password on target, not in the EE<span class="tag fix">fix</span></span><div class="hash">a1e2d81</div></span></li>
+        <li class="row v48"><span class="time">16:36</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Roadmap: mark Phase 5 in progress; log decisions</span><div class="hash">2d088d9</div></span></li>
+        <li class="row v48"><span class="time">16:38</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Add <code>tools/</code> operator helpers: project sync and job fetch</span><div class="hash">b03244b</div></span></li>
+        <li class="row v46"><span class="time">16:46</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Fix Docker SDK install: virtualenv to avoid RPM conflict on AL2023<span class="tag fix">fix</span></span><div class="hash">64f77d5</div></span></li>
+      </ul>
+    </div>
+
+    <div class="phase">
+      <div class="phase-head"><span class="pn">Phase 4</span><span class="pt">Operations, polish &amp; docs to tested state</span><span class="pr">16:55 – 18:21</span></div>
+      <ul class="log">
+        <li class="row v46"><span class="time">16:55</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Enhance webserver page: Ansible logo, release version, URL in job log</span><div class="hash">f7babb2</div></span></li>
+        <li class="row v46"><span class="time">16:55</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Add nightly teardown: job template + 6 PM Arizona schedule</span><div class="hash">46a65ea</div></span></li>
+        <li class="row v46"><span class="time">17:02</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Replace inline SVG with AAP logo PNG from brand assets</span><div class="hash">97b8ac7</div></span></li>
+        <li class="row v46"><span class="time">17:12</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Add control inventory for localhost-only job templates</span><div class="hash">13840d2</div></span></li>
+        <li class="row v46"><span class="time">17:15</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Fix teardown: guard host deregistration against empty Terraform state<span class="tag fix">fix</span></span><div class="hash">c47b81a</div></span></li>
+        <li class="row v46"><span class="time">17:39</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Pin AMI to AL2023 2023.12.20260608 so patching demo can move forward</span><div class="hash">a33364d</div></span></li>
+        <li class="row v48"><span class="time">18:13</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Add new-user AAP load guide; correct README/ROADMAP to tested state</span><div class="hash">3de6a77</div></span></li>
+        <li class="row v48"><span class="time">18:16</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Fix broken in-page anchor links in loading-aap guide<span class="tag fix">fix</span></span><div class="hash">41486c6</div></span></li>
+        <li class="row v48 milestone"><span class="time">18:21</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Update demo talk track to tested state — <b>HEAD</b></span><div class="hash">5b32fcd</div></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <div class="meta">
+      <span><b>Repo</b> AMZL-dailydemo</span>
+      <span><b>Author</b> Eric Ames</span>
+      <span><b>Branch</b> main</span>
+    </div>
+    <span>Generated from git history · 2026-07-14</span>
+  </footer>
+
+</div>

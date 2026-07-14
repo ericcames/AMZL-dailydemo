@@ -1,0 +1,374 @@
+<title>panos_backup — Build Session Report</title>
+<style>
+  :root {
+    --ground: #F5F6F8;
+    --panel: #FFFFFF;
+    --panel-2: #FAFBFC;
+    --ink: #161B23;
+    --ink-soft: #3C4452;
+    --muted: #606975;
+    --faint: #8C95A2;
+    --hair: #E1E5EB;
+    --hair-strong: #CED4DC;
+    --v48: #3A56D4;
+    --v48-soft: #E7EBFB;
+    --spine: #C5CCD6;
+    --accent: #D45B3A;
+    --accent-soft: #FBEEE7;
+    --shadow: 0 1px 2px rgba(22,27,35,.04), 0 8px 24px rgba(22,27,35,.06);
+    --mono: ui-monospace, "SF Mono", "SFMono-Regular", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #0C1018;
+      --panel: #141A24;
+      --panel-2: #10161F;
+      --ink: #E6EAF0;
+      --ink-soft: #BFC6D0;
+      --muted: #8E97A4;
+      --faint: #6A7381;
+      --hair: #222A36;
+      --hair-strong: #2C3644;
+      --v48: #7C90F2;
+      --v48-soft: #1B2340;
+      --spine: #303A48;
+      --accent: #E8845E;
+      --accent-soft: #2E1D16;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"] {
+    --ground: #F5F6F8; --panel: #FFFFFF; --panel-2: #FAFBFC;
+    --ink: #161B23; --ink-soft: #3C4452; --muted: #606975; --faint: #8C95A2;
+    --hair: #E1E5EB; --hair-strong: #CED4DC;
+    --v48: #3A56D4; --v48-soft: #E7EBFB; --spine: #C5CCD6;
+    --accent: #D45B3A; --accent-soft: #FBEEE7;
+    --shadow: 0 1px 2px rgba(22,27,35,.04), 0 8px 24px rgba(22,27,35,.06);
+  }
+  :root[data-theme="dark"] {
+    --ground: #0C1018; --panel: #141A24; --panel-2: #10161F;
+    --ink: #E6EAF0; --ink-soft: #BFC6D0; --muted: #8E97A4; --faint: #6A7381;
+    --hair: #222A36; --hair-strong: #2C3644;
+    --v48: #7C90F2; --v48-soft: #1B2340; --spine: #303A48;
+    --accent: #E8845E; --accent-soft: #2E1D16;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink);
+    font-family: var(--sans); line-height: 1.6;
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: clamp(28px,5vw,64px) clamp(18px,4vw,40px) 80px; }
+
+  /* ---- Header ---- */
+  .eyebrow {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--muted);
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  }
+  .eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: inline-block; }
+  h1 {
+    font-size: clamp(30px,6vw,50px); line-height: 1.05; letter-spacing: -0.02em;
+    margin: 18px 0 0; text-wrap: balance; font-weight: 680;
+  }
+  h1 .repo { font-family: var(--mono); font-weight: 600; font-size: .82em; letter-spacing: -0.01em; }
+  .thesis {
+    font-size: clamp(17px,2.4vw,20px); color: var(--ink-soft);
+    margin: 20px 0 0; max-width: 60ch; text-wrap: pretty;
+  }
+  .thesis b { color: var(--ink); font-weight: 640; }
+
+  /* ---- Stat strip ---- */
+  .stats {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+    background: var(--hair); border: 1px solid var(--hair); border-radius: 12px;
+    overflow: hidden; margin: 36px 0 8px; box-shadow: var(--shadow);
+  }
+  .stat { background: var(--panel); padding: 18px 16px; }
+  .stat .n {
+    font-family: var(--mono); font-size: clamp(24px,4.5vw,32px); font-weight: 620;
+    letter-spacing: -0.02em; font-variant-numeric: tabular-nums; line-height: 1;
+  }
+  .stat .l { font-size: 12px; color: var(--muted); margin-top: 8px; letter-spacing: .02em; }
+  .stat.hl .n { color: var(--v48); }
+
+  /* ---- Section scaffolding ---- */
+  section { margin-top: 52px; }
+  .sec-head {
+    display: flex; align-items: baseline; gap: 12px;
+    border-bottom: 1px solid var(--hair-strong); padding-bottom: 10px; margin-bottom: 22px;
+  }
+  .sec-head h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .1em; margin: 0; font-weight: 640; }
+  .sec-head .idx { font-family: var(--mono); font-size: 13px; color: var(--v48); font-weight: 600; }
+  .sec-head .aside { margin-left: auto; font-family: var(--mono); font-size: 12px; color: var(--faint); }
+
+  p.body { color: var(--ink-soft); max-width: 66ch; }
+  p.body b { color: var(--ink); font-weight: 620; }
+  code {
+    font-family: var(--mono); font-size: .88em; background: var(--panel-2);
+    border: 1px solid var(--hair); padding: 1px 5px; border-radius: 5px; color: var(--ink);
+  }
+
+  /* ---- Pipeline ---- */
+  .pipe {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    font-family: var(--mono); font-size: 13px; margin: 4px 0 26px;
+  }
+  .pipe .node {
+    background: var(--panel); border: 1px solid var(--hair-strong);
+    border-radius: 7px; padding: 8px 12px; box-shadow: var(--shadow);
+  }
+  .pipe .arw { color: var(--faint); }
+
+  /* ---- AI panel ---- */
+  .ai {
+    background: var(--panel); border: 1px solid var(--hair); border-radius: 14px;
+    padding: clamp(20px,3vw,30px); box-shadow: var(--shadow);
+  }
+  .ai .lead { font-size: 17px; color: var(--ink); margin: 0 0 22px; max-width: 62ch; }
+  .ai .lead b { font-weight: 660; }
+  .mv {
+    border: 1px solid var(--hair-strong); border-radius: 11px; padding: 16px 18px;
+    position: relative; overflow: hidden; max-width: 340px; margin-bottom: 24px;
+  }
+  .mv::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--v48); }
+  .mv { background: var(--v48-soft); }
+  .mv .cnt { font-family: var(--mono); font-size: 30px; font-weight: 640; line-height: 1; font-variant-numeric: tabular-nums; color: var(--v48); }
+  .mv .who { font-family: var(--mono); font-size: 13px; margin-top: 8px; font-weight: 600; color: var(--ink); }
+  .mv .what { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+
+  .roles { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 28px; }
+  @media (max-width: 620px) { .roles, .stats { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 500px) { .roles { grid-template-columns: 1fr; } }
+  .role { border-top: 1px solid var(--hair); padding-top: 12px; }
+  .role h4 { margin: 0 0 4px; font-size: 13.5px; font-weight: 640; }
+  .role p { margin: 0; font-size: 13.5px; color: var(--muted); }
+
+  /* ---- Architecture ---- */
+  .arch {
+    background: var(--panel); border: 1px solid var(--hair); border-radius: 14px;
+    padding: clamp(18px,3vw,28px); box-shadow: var(--shadow); margin-top: 8px;
+    font-family: var(--mono); font-size: 13px; line-height: 1.65; color: var(--ink-soft);
+    overflow-x: auto; white-space: pre;
+  }
+  .arch b { color: var(--ink); font-weight: 600; }
+  .arch .dim { color: var(--faint); }
+
+  /* ---- Timeline ---- */
+  .legend {
+    display: flex; gap: 18px; flex-wrap: wrap;
+    font-family: var(--mono); font-size: 12px; color: var(--muted); margin-bottom: 26px;
+  }
+  .legend .k { display: inline-flex; align-items: center; gap: 7px; }
+  .legend .sw { width: 11px; height: 11px; border-radius: 3px; }
+  .legend .sw.v48 { background: var(--v48); }
+
+  .phase { margin-bottom: 10px; }
+  .phase-head { display: flex; align-items: baseline; gap: 12px; margin: 30px 0 6px; }
+  .phase-head:first-of-type { margin-top: 0; }
+  .phase-head .pn { font-family: var(--mono); font-size: 12px; color: var(--faint); letter-spacing: .08em; text-transform: uppercase; }
+  .phase-head .pt { font-size: 15px; font-weight: 640; letter-spacing: -0.01em; }
+  .phase-head .pr { margin-left: auto; font-family: var(--mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .log { list-style: none; margin: 0; padding: 0 0 0 4px; position: relative; }
+  .log::before {
+    content: ""; position: absolute; left: 76px; top: 6px; bottom: 6px;
+    width: 2px; background: var(--spine);
+  }
+  @media (max-width: 560px) { .log::before { left: 8px; } }
+  .row {
+    display: grid; grid-template-columns: 62px 24px 1fr; gap: 12px;
+    align-items: start; padding: 7px 0;
+  }
+  .row .time {
+    font-family: var(--mono); font-size: 12.5px; color: var(--muted);
+    font-variant-numeric: tabular-nums; text-align: right; padding-top: 1px; white-space: nowrap;
+  }
+  .row .marker { position: relative; height: 100%; display: flex; justify-content: center; padding-top: 4px; }
+  .row .marker .pt {
+    width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--ground);
+    z-index: 1; box-shadow: 0 0 0 1px var(--spine);
+  }
+  .row.v48 .marker .pt { background: var(--v48); box-shadow: 0 0 0 1px var(--v48); }
+  .row .body-cell { min-width: 0; }
+  .row .msg { font-size: 14px; color: var(--ink); line-height: 1.45; }
+  .row .hash { font-family: var(--mono); font-size: 11.5px; color: var(--faint); margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .row.milestone .msg { font-weight: 600; }
+  .tag {
+    display: inline-block; font-family: var(--mono); font-size: 10px;
+    letter-spacing: .06em; text-transform: uppercase; padding: 1px 6px;
+    border-radius: 4px; vertical-align: middle; margin-left: 6px;
+    border: 1px solid var(--hair-strong); color: var(--muted);
+  }
+  .tag.feat { color: var(--v48); border-color: var(--v48); }
+  .tag.chore { color: var(--accent); border-color: var(--accent); }
+
+  @media (max-width: 560px) {
+    .row { grid-template-columns: 24px 1fr; }
+    .row .time { grid-column: 1 / -1; text-align: left; padding-left: 36px; order: -1; padding-top: 0; color: var(--faint); }
+    .row .marker { grid-row: 2; }
+    .row .body-cell { grid-row: 2; }
+  }
+
+  /* ---- Restore panel ---- */
+  .restore-panel {
+    background: var(--accent-soft); border: 1px solid var(--hair-strong);
+    border-radius: 12px; padding: 18px 22px; margin-top: 22px;
+    position: relative; overflow: hidden;
+  }
+  .restore-panel::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--accent); }
+  .restore-panel h4 { margin: 0 0 6px; font-size: 14px; font-weight: 640; }
+  .restore-panel p { margin: 0; font-size: 13.5px; color: var(--muted); }
+
+  /* ---- Footer ---- */
+  footer {
+    margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--hair-strong);
+    display: flex; flex-wrap: wrap; gap: 8px 20px; justify-content: space-between;
+    font-family: var(--mono); font-size: 12px; color: var(--faint);
+  }
+  footer .meta { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+  footer b { color: var(--muted); font-weight: 600; }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow"><span class="dot"></span> Build Session Report · PAN-OS Backup &amp; Restore</div>
+    <h1>How <span class="repo">panos_backup</span> was built in one hour</h1>
+    <p class="thesis">Automated HA firewall backup <b>through Panorama</b>, per-device-group timestamped snapshots committed to git, and a self-updating <b>PANOS Restore</b> job template with point-in-time survey dropdowns. <b>5 commits, one ~1-hour session, 100% AI co-authored.</b></p>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><div class="n">5</div><div class="l">commits, one day</div></div>
+    <div class="stat"><div class="n">1h 02m</div><div class="l">13:36 → 14:38 PDT</div></div>
+    <div class="stat hl"><div class="n">100%</div><div class="l">AI co-authored</div></div>
+    <div class="stat"><div class="n">5</div><div class="l">roles, single-purpose</div></div>
+  </div>
+
+  <section>
+    <div class="sec-head"><span class="idx">01</span><h2>Executive Summary</h2></div>
+    <p class="body"><b>panos_backup</b> is a complete <b>PAN-OS backup and restore solution for AAP 2.5</b>, built by <b>mlowcher</b> to manage HA firewalls through Panorama. The backup playbook discovers device groups, exports every connected HA member's running config via serial redirection through Panorama, writes timestamped per-group snapshots, prunes to a configurable retention depth, commits to git, and then creates or updates a self-service <b>PANOS Restore</b> job template whose survey dropdowns always reflect current device groups and retained restore points.</p>
+
+    <p class="body">Restore loads into <b>candidate config only</b> by default — a deliberate human gate. A <code>commit_and_push</code> survey toggle (added in the third commit) allows hands-off commit with HA config-sync when the operator is confident.</p>
+
+    <div style="margin: 28px 0 0;">
+      <div style="font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 640; margin-bottom: 10px;">Backup pipeline</div>
+      <div class="pipe">
+        <span class="node">discover</span><span class="arw">→</span>
+        <span class="node">export</span><span class="arw">→</span>
+        <span class="node">prune</span><span class="arw">→</span>
+        <span class="node">git push</span><span class="arw">→</span>
+        <span class="node">update restore JT</span>
+      </div>
+    </div>
+
+    <div class="restore-panel">
+      <h4>Restore survey (self-updating)</h4>
+      <p>The backup playbook rewrites the PANOS Restore template's survey on every run — device group and restore-point dropdowns stay current without manual edits. The restore template appears after the first backup run, not from config-as-code.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="idx">02</span><h2>Architecture</h2></div>
+    <div class="arch"><b>panos_backup.yml</b>
+<span class="dim">  └─</span> panos_discover        <span class="dim">show devicegroups → device_groups fact</span>
+<span class="dim">  └─</span> panos_backup_export   <span class="dim">panos_export per firewall (serial redirect) → per-group XML + manifest</span>
+<span class="dim">  └─</span> backup_prune          <span class="dim">keep newest 10 per device group</span>
+<span class="dim">  └─</span> git_push              <span class="dim">commit + push additions &amp; prunes to GitHub</span>
+<span class="dim">  └─</span> aap_restore_template  <span class="dim">(re)build PANOS Restore JT + survey dropdowns</span>
+
+<b>panos_restore.yml</b>            <span class="dim">import + load config into candidate (no auto-commit by default)</span></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="idx">03</span><h2>AI Involvement</h2></div>
+    <div class="ai">
+      <p class="lead">Every one of the 5 commits carries a <b>Co-Authored-By: Claude Opus 4.8</b> trailer. A single model version throughout — no mid-session model swap.</p>
+      <div class="mv">
+        <div class="cnt">5 / 5</div>
+        <div class="who">Claude Opus 4.8</div>
+        <div class="what">Design spec, full implementation, feature addition, lint cleanup, and refactor — all co-authored.</div>
+      </div>
+      <div class="roles">
+        <div class="role"><h4>Design-first</h4><p>A formal design spec (<code>docs/superpowers/specs/</code>) was committed <em>before</em> any implementation — goals, non-goals, locked decisions, error handling, and repo layout defined up front.</p></div>
+        <div class="role"><h4>Full implementation</h4><p>The second commit shipped everything: 5 roles, 2 playbooks, numbered config-as-code, 2 custom credential types, EE definition, and complete documentation.</p></div>
+        <div class="role"><h4>Iterative refinement</h4><p>Three follow-up commits in 40 minutes: added the <code>commit_and_push</code> restore toggle, cleaned ansible-lint, and consolidated the backup repo URL to a single variable.</p></div>
+        <div class="role"><h4>Governance</h4><p>Secrets policy enforced throughout — custom credential types inject env vars, no vaulted files in git. README, CaC README, and design spec all consistent.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="idx">04</span><h2>Session Timeline</h2><span class="aside">2026-07-06 · PDT (−0700)</span></div>
+    <div class="legend">
+      <span class="k"><span class="sw v48"></span> Opus 4.8</span>
+      <span class="k">Author: mlowcher &lt;mlowcher@redhat.com&gt;</span>
+    </div>
+
+    <div class="phase">
+      <div class="phase-head"><span class="pn">Phase 1</span><span class="pt">Design &amp; build</span><span class="pr">13:36 – 13:58</span></div>
+      <ul class="log">
+        <li class="row v48 milestone"><span class="time">13:36</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Add PAN-OS backup &amp; restore design spec</span><div class="hash">874a655</div></span></li>
+        <li class="row v48 milestone"><span class="time">13:58</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">PAN-OS backup/restore solution for AAP — full implementation<span class="tag feat">feat</span></span><div class="hash">2277694</div></span></li>
+      </ul>
+    </div>
+
+    <div class="phase">
+      <div class="phase-head"><span class="pn">Phase 2</span><span class="pt">Iterate &amp; harden</span><span class="pr">14:03 – 14:38</span></div>
+      <ul class="log">
+        <li class="row v48"><span class="time">14:03</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Add <code>commit_and_push</code> survey toggle to restore<span class="tag feat">feat</span></span><div class="hash">6100f08</div></span></li>
+        <li class="row v48"><span class="time">14:20</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Make ansible-lint pass clean<span class="tag chore">chore</span></span><div class="hash">bda62a5</div></span></li>
+        <li class="row v48 milestone"><span class="time">14:38</span><span class="marker"><span class="pt"></span></span><span class="body-cell"><span class="msg">Consolidate backup repo location into a single variable — <b>HEAD</b></span><div class="hash">e773e43</div></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="idx">05</span><h2>Key Design Decisions</h2></div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+      <div style="border: 1px solid var(--hair-strong); border-radius: 10px; padding: 14px 16px; background: var(--panel);">
+        <div style="font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); margin-bottom: 6px;">Backup via</div>
+        <div style="font-size: 14px; font-weight: 600;">Panorama serial redirect</div>
+        <div style="font-size: 12.5px; color: var(--muted); margin-top: 4px;">Never connects to firewall management interfaces directly</div>
+      </div>
+      <div style="border: 1px solid var(--hair-strong); border-radius: 10px; padding: 14px 16px; background: var(--panel);">
+        <div style="font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); margin-bottom: 6px;">HA scope</div>
+        <div style="font-size: 14px; font-weight: 600;">Both active + passive</div>
+        <div style="font-size: 12.5px; color: var(--muted); margin-top: 4px;">Every connected HA member in each device group</div>
+      </div>
+      <div style="border: 1px solid var(--hair-strong); border-radius: 10px; padding: 14px 16px; background: var(--panel);">
+        <div style="font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); margin-bottom: 6px;">Restore safety</div>
+        <div style="font-size: 14px; font-weight: 600;">Candidate config only</div>
+        <div style="font-size: 12.5px; color: var(--muted); margin-top: 4px;">Human gate by default; optional <code style="font-size: 11px;">commit_and_push</code> toggle</div>
+      </div>
+      <div style="border: 1px solid var(--hair-strong); border-radius: 10px; padding: 14px 16px; background: var(--panel);">
+        <div style="font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); margin-bottom: 6px;">Secrets</div>
+        <div style="font-size: 14px; font-weight: 600;">AAP credential types</div>
+        <div style="font-size: 12.5px; color: var(--muted); margin-top: 4px;">Env-var injection, never vaulted in git</div>
+      </div>
+      <div style="border: 1px solid var(--hair-strong); border-radius: 10px; padding: 14px 16px; background: var(--panel);">
+        <div style="font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); margin-bottom: 6px;">Retention</div>
+        <div style="font-size: 14px; font-weight: 600;">10 per device group</div>
+        <div style="font-size: 12.5px; color: var(--muted); margin-top: 4px;">Independent history per group; configurable via <code style="font-size: 11px;">backup_retention_count</code></div>
+      </div>
+      <div style="border: 1px solid var(--hair-strong); border-radius: 10px; padding: 14px 16px; background: var(--panel);">
+        <div style="font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); margin-bottom: 6px;">AAP collection</div>
+        <div style="font-size: 14px; font-weight: 600;">ansible.platform</div>
+        <div style="font-size: 12.5px; color: var(--muted); margin-top: 4px;">Not legacy <code style="font-size: 11px;">ansible.controller</code></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="meta">
+      <span><b>Repo</b> mlowcher61/panos_backup</span>
+      <span><b>Author</b> mlowcher</span>
+      <span><b>Branch</b> main</span>
+    </div>
+    <span>Generated from git history · 2026-07-14</span>
+  </footer>
+
+</div>
