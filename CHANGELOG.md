@@ -6,6 +6,14 @@ to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- CI: the `ansible-lint` gate failed on every run because `amazon.aws.s3_bucket`
+  (`playbooks/provision_vm_aws.yml`) and `ansible.controller.project_update`
+  (`tools/sync_project.yml`) were missing from `mock_modules` in `.ansible-lint`.
+  CI lints `--offline` (collections not installed), so unmocked external modules
+  fail syntax-check. (#6)
+
 ### Added
 
 - `docs/loading-aap.md` — a step-by-step walkthrough for a new Ansible user to

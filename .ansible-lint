@@ -9,6 +9,8 @@ profile: basic
 mock_modules:
   - ansible.controller.host
   - ansible.controller.group
+  - ansible.controller.project_update
+  - amazon.aws.s3_bucket
   - community.docker.docker_image
   - community.docker.docker_container
   - ansible.posix.firewalld
