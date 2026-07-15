@@ -51,6 +51,11 @@ to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- CI governance: `ansible-lint` and `yamllint` are now **required status checks**
+  on `main` (via branch protection), so a PR cannot merge until both pass;
+  `enforce_admins` keeps this binding on admins too. Updated
+  `.claude/skills/repo-workflow/SKILL.md` accordingly — the CI section no longer
+  says "lint is not a required check". (#14)
 - CODEOWNERS: added `@hornjason` as a global co-owner alongside `@ericcames` on
   every rule (Jason is now an active collaborator). Requests review from both
   owners; does not require approval (`main` requires 0 approvals). (#10)
