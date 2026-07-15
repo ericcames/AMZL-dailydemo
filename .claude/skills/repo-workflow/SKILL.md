@@ -5,7 +5,7 @@ description: >-
   open a PR, and merge when `main` is a protected branch and two people (Eric and
   Jason) plus their Claude assistants share the repo. Covers coordinating before
   you start, the standard branch flow, the commit-on-main recovery flow,
-  commit/PR conventions, the "lint is not a required check" trap, CHANGELOG
+  commit/PR conventions, the required lint checks that gate merge, CHANGELOG
   discipline, and branch cleanup.
   TRIGGER when the user asks to commit, push, open/create a PR, merge, "ship it",
   land a change, branch, clean up branches, or when a push to `main` is rejected
@@ -115,21 +115,22 @@ Non-destructive: `git branch` captures the commit before the reset.
   🤖 Generated with [Claude Code](https://claude.com/claude-code)
   ```
 
-## CI: verify green yourself — lint is NOT a required check
+## CI: lint is a required check — a red run blocks merge
 
-The `lint.yml` (ansible-lint) workflow runs on PRs, but **no required status
-checks are configured on `main`** — a red lint does not block merge and can ride
-along silently. Auto-merge succeeding is *not* evidence CI passed. Always confirm
-explicitly before merging:
+The `lint.yml` workflow runs `ansible-lint` and `yamllint` on every PR, and both
+are **required status checks on `main`** — a PR cannot merge until they pass, and
+`enforce_admins` is on, so this binds admins too. Still confirm explicitly rather
+than assuming:
 
 ```bash
 gh pr checks <N> --repo ericcames/AMZL-dailydemo
 ```
 
-All jobs should read `pass`. A common offline-lint failure is
-`syntax-check[unknown-module]` for a certified module — fix it by adding the
-module to `mock_modules` in `.ansible-lint`, not by skipping (syntax-check is
-unskippable). This is exactly how PR #7 had to repair lint that slipped past.
+Both `ansible-lint` and `yamllint` should read `pass`. A common offline-lint
+failure is `syntax-check[unknown-module]` for a certified module — fix it by
+adding the module to `mock_modules` in `.ansible-lint`, not by skipping
+(syntax-check is unskippable). This is how `ansible-lint` broke on `main` before
+it was gated (see PR #7) — making it required is what closes that gap.
 
 ## Merging
 
