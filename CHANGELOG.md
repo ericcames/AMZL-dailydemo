@@ -44,6 +44,9 @@ to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- CODEOWNERS: added `@hornjason` as a global co-owner alongside `@ericcames` on
+  every rule (Jason is now an active collaborator). Requests review from both
+  owners; does not require approval (`main` requires 0 approvals). (#10)
 - Terraform AMI: pinned to AL2023 release `2023.12.20260608` (via `aws_ami`
   data source + `al2023_release` variable) instead of always fetching the
   latest AMI from SSM. This ensures the patch playbook has room to demonstrate
