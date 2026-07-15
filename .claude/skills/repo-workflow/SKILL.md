@@ -132,6 +132,21 @@ adding the module to `mock_modules` in `.ansible-lint`, not by skipping
 (syntax-check is unskippable). This is how `ansible-lint` broke on `main` before
 it was gated (see PR #7) — making it required is what closes that gap.
 
+**Keep the required-check names in sync with `lint.yml`.** Branch protection
+matches required checks **by job name** (`ansible-lint`, `yamllint`). If you
+rename a job in `.github/workflows/lint.yml` — or the workflow stops running —
+then no check of the required name ever reports, and **every PR stays blocked**
+on a gate that can never go green. So rename in lockstep: when you change a job
+name, update the required contexts too. Inspect or fix the gate with:
+
+```bash
+# view the required checks
+gh api repos/ericcames/AMZL-dailydemo/branches/main/protection/required_status_checks
+# update them (send the full contexts list you want)
+gh api -X PATCH repos/ericcames/AMZL-dailydemo/branches/main/protection/required_status_checks \
+  -f strict=false -f 'contexts[]=ansible-lint' -f 'contexts[]=yamllint'
+```
+
 ## Merging
 
 Merges complete on GitHub with a **merge commit** (`Merge pull request #N from
