@@ -16,6 +16,13 @@ to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Docs: a `Cloud Use Cases` lead-in section at the top of
+  `docs/amzl-session-timeline.md` capturing the customer's four use cases verbatim
+  plus a `Discovery` subsection (why they chose this use case / what it looks like
+  today). Embedded real, scrubbed demo screenshots — workflow visualizer,
+  launch survey, successful run, and the deployed webserver page — in the timeline,
+  and the visualizer in `README.md`. Browser chrome was cropped from every shot so
+  no RHDP/cluster URL or bookmarks are committed. (#12)
 - `.claude/skills/repo-workflow/SKILL.md` — a committed skill defining the shared
   git/PR workflow for this repo: coordinating before you start, the local branch
   flow and a github.com web-UI flow, protected-`main` commit recovery, commit/PR

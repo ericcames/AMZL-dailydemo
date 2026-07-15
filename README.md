@@ -20,6 +20,10 @@ job template so the story is visible step by step:
 
 Any node failing stops the chain.
 
+![AMZL Daily Demo — the 5-node workflow in the AAP visualizer](docs/images/workflow-visualizer.png)
+
+![AMZL Daily Demo — workflow visualizer, continued](docs/images/workflow-visualizer-2.png)
+
 ## What it demonstrates (customer use cases)
 
 - **Patch** AMZL2023 VMs to a specific release

@@ -7,6 +7,39 @@ updated: 2026-07-14
 
 # AMZL-dailydemo — Session Timeline
 
+## Cloud Use Cases
+
+The customer's use case — the four cloud operations this demo automates end to
+end:
+
+- **Patch our AMZL2023 VMs to a certain release**
+- **Create users** — add to the sudoers group, set the password, and add an SSH
+  public key
+- **Initial system configuration** — security best practices, chrony and other
+  utils, admin user setup, initial patching
+- **Deploy a Docker app** — ensure the user belongs to the docker group; pull and
+  deploy a Docker image
+
+A single **5-node workflow** (`AMZL Daily Demo - Provision and Configure`)
+satisfies all four — provision → patch → harden → create user → deploy Docker:
+
+![AMZL Daily Demo — workflow visualizer (start → provision → patch)](images/workflow-visualizer.png)
+
+![AMZL Daily Demo — workflow visualizer (harden → devops_user → docker_web)](images/workflow-visualizer-2.png)
+
+### Discovery
+
+Questions to explore with the customer, to anchor the demo to their reality:
+
+- **Why this use case?** What triggered it — a new cloud footprint, an
+  audit/compliance driver, a migration off hand-built VMs, developer-onboarding
+  pain?
+- **What does it look like today?** How are AMZL2023 VMs currently provisioned,
+  patched, hardened, and handed to developers — what's manual, what's scripted,
+  who owns each step, and where does it break down?
+
+_(Capture the customer's answers here.)_
+
 ## Phase 1 — Foundation — stand up every layer
 
 1. Scaffold repo — community standards + governance
@@ -45,6 +78,8 @@ updated: 2026-07-14
 11. Survey: make Target release a dropdown of recent AL2023 releases
     - Surveys in AAP are defined in the CaC YAML — versioned, reviewable, consistent across environments
     - In AWX, survey changes are UI clicks with no audit trail
+
+![Launch survey — VM size and target AL2023 release as config-as-code dropdowns](images/launch-survey.png)
 
 ## Phase 3 — Debug to green — the real engineering
 
@@ -89,3 +124,11 @@ updated: 2026-07-14
 
 25. Fix broken in-page anchor links in loading-aap guide
 26. Update demo talk track to tested state
+
+## Demo — the running result
+
+The workflow completing successfully, and the app it deploys:
+
+![Workflow job "AMZL Daily Demo - Provision and Configure" — completed successfully in 6m 18s](images/workflow-run-success.png)
+
+![Deployed webserver — the daily-demo page served from the Docker container the workflow pulled and deployed](images/webserver-page.png)
