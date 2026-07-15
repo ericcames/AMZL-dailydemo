@@ -16,6 +16,13 @@ to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- `.claude/skills/repo-workflow/SKILL.md` — a committed skill defining the shared
+  git/PR workflow for this repo: coordinating before you start, the local branch
+  flow and a github.com web-UI flow, protected-`main` commit recovery, commit/PR
+  conventions (co-author trailer names the actual authoring model, never
+  hardcoded), the "lint is not a required check" caveat, and merge/branch-cleanup
+  discipline. Keeps both collaborators and both Claude assistants on one
+  convention. (#8)
 - `docs/loading-aap.md` — a step-by-step walkthrough for a new Ansible user to
   load every AAP object as config-as-code, from ordering the RHDP environment
   through launching the workflow. Enumerates the objects `load.yml` creates and
