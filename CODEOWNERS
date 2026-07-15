@@ -2,23 +2,23 @@
 # GitHub requests review from these owners when matching paths change.
 
 # Catch-all
-*                       @ericcames
+*                       @ericcames @hornjason
 
 # Ansible content
-/playbooks/             @ericcames
-/roles/                 @ericcames
-/collections/           @ericcames
+/playbooks/             @ericcames @hornjason
+/roles/                 @ericcames @hornjason
+/collections/           @ericcames @hornjason
 
 # Infrastructure as Code
-/terraform/             @ericcames
+/terraform/             @ericcames @hornjason
 
 # AAP Config as Code
-/aap_config/            @ericcames
+/aap_config/            @ericcames @hornjason
 
 # Execution Environment
-/execution-environment.yml  @ericcames
+/execution-environment.yml  @ericcames @hornjason
 
 # Governance + docs
-/docs/                  @ericcames
-/ROADMAP.md             @ericcames
-/CLAUDE.md              @ericcames
+/docs/                  @ericcames @hornjason
+/ROADMAP.md             @ericcames @hornjason
+/CLAUDE.md              @ericcames @hornjason
