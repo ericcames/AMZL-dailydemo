@@ -2,10 +2,14 @@
 doc-type: reference
 status: active
 owner: jason
-updated: 2026-07-14
+updated: 2026-07-21
 ---
 
-# AMZL-dailydemo — Session Timeline
+# AMZL-dailydemo — Build Narrative
+
+_A phased narrative of how the demo was built. For the timestamped,
+commit-by-commit log (times, model, hashes), see
+[`amzl-build-session-report.md`](amzl-build-session-report.md)._
 
 ## Cloud Use Cases
 
@@ -38,91 +42,106 @@ Questions to explore with the customer, to anchor the demo to their reality:
   patched, hardened, and handed to developers — what's manual, what's scripted,
   who owns each step, and where does it break down?
 
-_(Capture the customer's answers here.)_
+> **Why AAP over AWX?** Most of what follows — config-as-code, execution
+> environments, workflows, surveys, schedules — is a *discipline* (UI-clicking vs
+> GitOps) that AWX supports too, since AAP's automation controller is built from
+> AWX. The genuine reasons to reach for AAP are the enterprise layer around it:
+> **Red Hat support/SLA, certified content + Automation Hub, Automation Analytics,
+> the platform gateway (SSO + unified UI), and enterprise RBAC/lifecycle.** The
+> notes below therefore contrast *click-ops vs config-as-code*, and call out AAP
+> specifically only where it's genuinely the differentiator.
 
 ## Phase 1 — Foundation — stand up every layer
 
+_Outcome: a reproducible environment anyone can stand up from scratch._
+
 1. Scaffold repo — community standards + governance
-   - In AWX, the platform holds your config — in AAP, the Git repo IS the system of record
-   - Without structure (CODEOWNERS, linting, PR templates), teams lose the governance AAP is built around
-   - This is the single biggest mindset shift: if it's not in the repo, it doesn't exist reproducibly
+   - Click-ops keeps your config in the platform database; config-as-code makes the Git repo the system of record
+   - Without structure (CODEOWNERS, linting, PR templates) there's no review gate or audit trail on changes
+   - The mindset shift: if it's not in the repo, it doesn't exist reproducibly
 
 2. Add Execution Environment definition
-   - Replaces "ssh into the control node and pip install" — the #1 source of drift in AWX environments
+   - Replaces the old Tower/venv model ("ssh into the control node and pip install") — historically the #1 source of dependency drift
    - EEs are container images: pinned dependencies, portable across dev/stage/prod
-   - AWX users who skip this will fight dependency mismatches on every upgrade
+   - Skip a defined EE and you fight dependency mismatches on every upgrade
 
 3. Add Terraform stack for Amazon Linux 2023
 
 4. Add workflow playbooks and roles (nodes 1–5)
-   - AAP workflows chain job templates — each node is a discrete, testable, reusable unit
-   - AWX users often put everything in one big playbook; AAP rewards decomposition
+   - Workflows chain job templates — each node is a discrete, testable, reusable unit
+   - Decomposing into nodes beats one monolithic playbook: smaller blast radius, reusable pieces, cleaner failure isolation
 
 5. Add AAP config-as-code (5 job templates + 5-node workflow)
-   - Every AAP object — credentials, projects, templates, workflows — defined in YAML, not clicked in the UI
-   - Promotion across environments becomes a Git merge instead of manually recreating objects
-   - AWX users who configure via UI will lose reproducibility and audit trail
+   - Every controller object — credentials, projects, templates, workflows — defined in YAML, not clicked in the UI
+   - Promotion across environments becomes a Git merge instead of manually recreating objects (see **Reference** below for a full dev/qa/prod pipeline)
+   - Configure by hand in the UI and you lose reproducibility and the audit trail
 
 6. Add dev-environment template and demo talk track
-7. Fix EE build: require `PYCMD=/usr/bin/python3.11`
+7. Fix EE build: require `PYCMD=/usr/bin/python3.11` **[fix]**
 8. Roadmap: EE built + pushed public; mark load as NEXT
 
 ## Phase 2 — Config-as-code & platform baseline
 
+_Outcome: platform settings and surveys are reviewable and consistent across environments._
+
 9. Baseline settings as code: pre-login banner + Automation Analytics
-   - Even platform-level settings (banners, analytics opt-in) are code — nothing is UI-only anymore
-   - This is what "everything as code" actually means in AAP vs. AWX
+   - Even platform-level settings are code — the pre-login banner and Automation Analytics opt-in load from the repo, not the UI
+   - Automation Analytics is a genuine AAP capability (subscription-tied, not in AWX) — and here it's enabled as code like everything else
 
 10. Provision node: guard that ensures the Terraform state bucket exists
 
 11. Survey: make Target release a dropdown of recent AL2023 releases
-    - Surveys in AAP are defined in the CaC YAML — versioned, reviewable, consistent across environments
-    - In AWX, survey changes are UI clicks with no audit trail
+    - Surveys defined in the CaC YAML are versioned, reviewable, and consistent across environments
+    - Edit a survey in the UI and the change lands with no review and no audit trail
 
 ![Launch survey — VM size and target AL2023 release as config-as-code dropdowns](images/launch-survey.png)
 
 ## Phase 3 — Debug to green — the real engineering
 
-12. Fix role resolution (move roles under `playbooks/`) + drop on-launch sync
-    - AAP's project structure expectations differ from AWX — role paths must align with the repo layout
-    - This is a common migration gotcha: what worked in AWX breaks silently in AAP
+_Outcome: the AL2023-specific failures are solved once, in code, not re-hit each demo._
+
+12. Fix role resolution (move roles under `playbooks/`) + drop on-launch sync **[fix]**
+    - Ansible resolves roles from `<playbook_dir>/roles`, so roles must sit adjacent to the playbooks that use them
+    - With no project-local `ansible.cfg` to add a rolepath, layout is the contract — misplace a role and it fails to resolve at runtime
 
 13. Project CaC: explicitly disable `scm_update_on_launch`
-    - AAP gives you fine-grained Git sync control per project — AWX defaults mask this
-    - Understanding when the platform pulls from Git prevents unexpected mid-run changes
+    - Per-project SCM settings give fine-grained control over when the platform pulls from Git
+    - Disabling update-on-launch prevents an unexpected mid-demo sync from changing what runs
 
-14. Fix devops user: hash password on target, not in the EE
-    - EEs are immutable containers — anything that depends on target state must run on the target
-    - AWX users used to control-node execution will hit this pattern repeatedly
+14. Fix devops user: hash password on target, not in the EE **[fix]**
+    - EEs are immutable containers — anything that depends on target state (like hashing a password) must run on the target, not in the EE
+    - Easy trap when you're used to the control node doing the work
 
 15. Roadmap: mark Phase 5 in progress; log decisions
 16. Add `tools/` operator helpers: project sync and job fetch
 
-17. Fix Docker SDK install: virtualenv to avoid RPM conflict on AL2023
-    - EEs isolate Python dependencies — but the target node still needs its own dependency management
-    - virtualenv on target prevents the RPM-vs-pip conflicts that AWX users hack around with sudo pip
+17. Fix Docker SDK install: virtualenv to avoid RPM conflict on AL2023 **[fix]**
+    - The EE isolates the control-side Python deps — but the target node still needs the Docker SDK to manage containers
+    - Installing it into a virtualenv on the target avoids clobbering AL2023's RPM-managed Python (the classic pip-vs-dnf conflict)
 
 ## Phase 4 — Operations, polish & docs to tested state
 
+_Outcome: a demo-ready, cost-controlled (nightly teardown) system with onboarding docs._
+
 18. Enhance webserver page: Ansible logo, release version, URL in job log
 19. Add nightly teardown: job template + 6 PM Arizona schedule
-    - Schedules are config-as-code too — repeatable, version-controlled, no UI-only cron jobs
-    - AWX users manually create schedules per environment; AAP loads them from the repo
+    - Schedules are config-as-code too — repeatable and version-controlled, not one-off cron set in the UI
+    - Loading them from the repo means every environment gets the same teardown, with no per-env clicking
 
 20. Replace inline SVG with AAP logo PNG from brand assets
 
 21. Add control inventory for localhost-only job templates
-    - AAP separates "where to run" from "what to run" more strictly than AWX
-    - Localhost jobs need an explicit control inventory — AWX was more forgiving here
+    - A localhost-only template still needs an inventory assigned, even though the platform provides an implicit localhost
+    - Giving provision/teardown their own empty control inventory avoids "resource is being used by running jobs" errors when teardown deletes hosts from the main inventory
 
-22. Fix teardown: guard host deregistration against empty Terraform state
+22. Fix teardown: guard host deregistration against empty Terraform state **[fix]**
 23. Pin AMI to AL2023 2023.12.20260608 so patching demo can move forward
 
 24. Add new-user AAP load guide; correct README/ROADMAP to tested state
     - Onboarding docs in the repo mean any team member can stand up the full environment from scratch
-    - In AWX, tribal knowledge lives in people's heads; AAP pushes it into the repo
+    - Runbooks in Git beat tribal knowledge — the repo, not someone's memory, is the source of truth
 
-25. Fix broken in-page anchor links in loading-aap guide
+25. Fix broken in-page anchor links in loading-aap guide **[fix]**
 26. Update demo talk track to tested state
 
 ## Demo — the running result
@@ -132,3 +151,11 @@ The workflow completing successfully, and the app it deploys:
 ![Workflow job "AMZL Daily Demo - Provision and Configure" — completed successfully in 6m 18s](images/workflow-run-success.png)
 
 ![Deployed webserver — the daily-demo page served from the Docker container the workflow pulled and deployed](images/webserver-page.png)
+
+---
+
+**Reference —** [`ericcames/aap_config`](https://github.com/ericcames/aap_config):
+a standalone config-as-code starter kit that takes this same pattern further —
+export from managed AAP and promote across dev/qa/prod via GitHub Actions.
+(Distinct from this repo's local `aap_config/` directory; the promotion pattern
+is cloud-agnostic.)
