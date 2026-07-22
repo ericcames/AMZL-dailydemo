@@ -53,7 +53,7 @@ Questions to explore with the customer, to anchor the demo to their reality:
 
 ## Phase 1 — Foundation — stand up every layer
 
-_Outcome: a reproducible environment anyone can stand up from scratch._
+> 🎯 **Outcome —** a reproducible environment anyone can stand up from scratch.
 
 1. Scaffold repo — community standards + governance
    - Click-ops keeps your config in the platform database; config-as-code makes the Git repo the system of record
@@ -82,7 +82,7 @@ _Outcome: a reproducible environment anyone can stand up from scratch._
 
 ## Phase 2 — Config-as-code & platform baseline
 
-_Outcome: platform settings and surveys are reviewable and consistent across environments._
+> 🎯 **Outcome —** platform settings and surveys are reviewable and consistent across environments.
 
 9. Baseline settings as code: pre-login banner + Automation Analytics
    - Even platform-level settings are code — the pre-login banner and Automation Analytics opt-in load from the repo, not the UI
@@ -98,7 +98,7 @@ _Outcome: platform settings and surveys are reviewable and consistent across env
 
 ## Phase 3 — Debug to green — the real engineering
 
-_Outcome: the AL2023-specific failures are solved once, in code, not re-hit each demo._
+> 🎯 **Outcome —** the AL2023-specific failures are solved once, in code, not re-hit each demo.
 
 12. Fix role resolution (move roles under `playbooks/`) + drop on-launch sync **[fix]**
     - Ansible resolves roles from `<playbook_dir>/roles`, so roles must sit adjacent to the playbooks that use them
@@ -121,7 +121,7 @@ _Outcome: the AL2023-specific failures are solved once, in code, not re-hit each
 
 ## Phase 4 — Operations, polish & docs to tested state
 
-_Outcome: a demo-ready, cost-controlled (nightly teardown) system with onboarding docs._
+> 🎯 **Outcome —** a demo-ready, cost-controlled (nightly teardown) system with onboarding docs.
 
 18. Enhance webserver page: Ansible logo, release version, URL in job log
 19. Add nightly teardown: job template + 6 PM Arizona schedule
