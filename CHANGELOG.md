@@ -66,6 +66,10 @@ to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Build narrative: styled the per-phase `Outcome` lines as 🎯 blockquote callouts
   (`> 🎯 **Outcome —** …`) instead of plain italics, so they stand out from the
   numbered build steps when skimming the phases.
+- Build narrative: added a 🔴 red-circle cue to the `[fix]` markers
+  (`🔴 **[fix]**`) so the debugging fixes stand out. GitHub Markdown strips inline
+  CSS color, so an emoji is used rather than red text — it renders everywhere with
+  no external dependency and pairs with the 🎯 Outcome callouts.
 
 ### Changed
 

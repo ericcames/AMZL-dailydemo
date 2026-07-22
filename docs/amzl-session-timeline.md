@@ -77,7 +77,7 @@ Questions to explore with the customer, to anchor the demo to their reality:
    - Configure by hand in the UI and you lose reproducibility and the audit trail
 
 6. Add dev-environment template and demo talk track
-7. Fix EE build: require `PYCMD=/usr/bin/python3.11` **[fix]**
+7. Fix EE build: require `PYCMD=/usr/bin/python3.11` 🔴 **[fix]**
 8. Roadmap: EE built + pushed public; mark load as NEXT
 
 ## Phase 2 — Config-as-code & platform baseline
@@ -100,7 +100,7 @@ Questions to explore with the customer, to anchor the demo to their reality:
 
 > 🎯 **Outcome —** the AL2023-specific failures are solved once, in code, not re-hit each demo.
 
-12. Fix role resolution (move roles under `playbooks/`) + drop on-launch sync **[fix]**
+12. Fix role resolution (move roles under `playbooks/`) + drop on-launch sync 🔴 **[fix]**
     - Ansible resolves roles from `<playbook_dir>/roles`, so roles must sit adjacent to the playbooks that use them
     - With no project-local `ansible.cfg` to add a rolepath, layout is the contract — misplace a role and it fails to resolve at runtime
 
@@ -108,14 +108,14 @@ Questions to explore with the customer, to anchor the demo to their reality:
     - Per-project SCM settings give fine-grained control over when the platform pulls from Git
     - Disabling update-on-launch prevents an unexpected mid-demo sync from changing what runs
 
-14. Fix devops user: hash password on target, not in the EE **[fix]**
+14. Fix devops user: hash password on target, not in the EE 🔴 **[fix]**
     - EEs are immutable containers — anything that depends on target state (like hashing a password) must run on the target, not in the EE
     - Easy trap when you're used to the control node doing the work
 
 15. Roadmap: mark Phase 5 in progress; log decisions
 16. Add `tools/` operator helpers: project sync and job fetch
 
-17. Fix Docker SDK install: virtualenv to avoid RPM conflict on AL2023 **[fix]**
+17. Fix Docker SDK install: virtualenv to avoid RPM conflict on AL2023 🔴 **[fix]**
     - The EE isolates the control-side Python deps — but the target node still needs the Docker SDK to manage containers
     - Installing it into a virtualenv on the target avoids clobbering AL2023's RPM-managed Python (the classic pip-vs-dnf conflict)
 
@@ -134,14 +134,14 @@ Questions to explore with the customer, to anchor the demo to their reality:
     - A localhost-only template still needs an inventory assigned, even though the platform provides an implicit localhost
     - Giving provision/teardown their own empty control inventory avoids "resource is being used by running jobs" errors when teardown deletes hosts from the main inventory
 
-22. Fix teardown: guard host deregistration against empty Terraform state **[fix]**
+22. Fix teardown: guard host deregistration against empty Terraform state 🔴 **[fix]**
 23. Pin AMI to AL2023 2023.12.20260608 so patching demo can move forward
 
 24. Add new-user AAP load guide; correct README/ROADMAP to tested state
     - Onboarding docs in the repo mean any team member can stand up the full environment from scratch
     - Runbooks in Git beat tribal knowledge — the repo, not someone's memory, is the source of truth
 
-25. Fix broken in-page anchor links in loading-aap guide **[fix]**
+25. Fix broken in-page anchor links in loading-aap guide 🔴 **[fix]**
 26. Update demo talk track to tested state
 
 ## Demo — the running result
