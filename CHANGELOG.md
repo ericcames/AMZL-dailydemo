@@ -63,6 +63,9 @@ to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   Timeline" section, which is the actual timestamped log) and added a note pointing
   there; filename unchanged. Removed a leftover "(Capture the customer's answers
   here.)" placeholder.
+- Build narrative: styled the per-phase `Outcome` lines as 🎯 blockquote callouts
+  (`> 🎯 **Outcome —** …`) instead of plain italics, so they stand out from the
+  numbered build steps when skimming the phases.
 
 ### Changed
 
