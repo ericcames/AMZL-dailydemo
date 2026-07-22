@@ -48,6 +48,21 @@ to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   EE), described the target-release survey as a drop-down defaulting to a pinned
   release, and replaced the stale "no teardown yet" reset section with the shipped
   Teardown JT + nightly schedule.
+- Session timeline: corrected the phase-commentary bullets in
+  `docs/amzl-session-timeline.md`, which framed config-as-code as an inherent
+  "AAP vs AWX" product difference. Reframed the contrast to *UI-clicking vs
+  config-as-code* (a discipline both platforms support — AAP's controller is built
+  from AWX), fixed two factually wrong claims (role resolution is `<playbook_dir>/roles`
+  + no project `ansible.cfg`, not an AWX/AAP difference; a localhost template needs
+  an assigned inventory even though the platform provides an implicit localhost),
+  and kept only genuine AAP differentiators (Automation Analytics, the pre-EE
+  Tower/venv history). Added an honest "Why AAP over AWX" callout, per-phase customer
+  outcomes, `[fix]` markers mirroring the build-session report, and a Reference link
+  to the `ericcames/aap_config` starter kit. Retitled the heading from "Session
+  Timeline" to "Build Narrative" (the build-session report already owns a "Session
+  Timeline" section, which is the actual timestamped log) and added a note pointing
+  there; filename unchanged. Removed a leftover "(Capture the customer's answers
+  here.)" placeholder.
 
 ### Changed
 
